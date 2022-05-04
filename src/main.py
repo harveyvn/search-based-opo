@@ -59,14 +59,14 @@ def run_from(ctx, scenario):
 @cli.command()
 @click.option('--scenario', required=True, type=click.Path(exists=True), multiple=False,
               help="Input accident sketch for generating the simulation")
-def evol_scenario(ctx, scenario):
+def search_from(ctx, scenario):
     # Pass the context of the command down the line
     ctx.ensure_object(dict)
     experiment: Experiment = Experiment(scenario)
     experiment.run()
 
 
-def execute_searching(scenario_files):
+def execute_searching_from(scenario_files):
     single_mutator = [
         {
             "type": CONST.MUTATE_SPEED_CLASS,
@@ -127,4 +127,4 @@ if __name__ == '__main__':
         {"name": "129224", "path": "ciren/129224/data.json"},
     ]
 
-    execute_searching(scenarios)
+    execute_searching_from(scenarios)
