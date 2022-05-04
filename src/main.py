@@ -13,26 +13,41 @@ def cli():
 
 
 @cli.command()
-@click.argument('scenario_file', type=click.Path(exists=True))
-def plot_ac3r(scenario_file):
+@click.option('--scenario', required=True, type=click.Path(exists=True), multiple=False,
+              help="Input accident sketch for generating the simulation")
+@click.pass_context
+def plot_ac3r(ctx, scenario):
+    # Pass the context of the command down the line
+    ctx.ensure_object(dict)
+
     """Take a JSON scenario file and plot the AC3R data points."""
-    VehicleTrajectoryVisualizer.plot_ac3r(scenario_file)
+    VehicleTrajectoryVisualizer.plot_ac3r(scenario)
 
 
 @cli.command()
-@click.argument('scenario_file', type=click.Path(exists=True))
-def plot_ac3rp(scenario_file):
+@click.option('--scenario', required=True, type=click.Path(exists=True), multiple=False,
+              help="Input accident sketch for generating the simulation")
+@click.pass_context
+def plot_ac3rp(ctx, scenario):
+    # Pass the context of the command down the line
+    ctx.ensure_object(dict)
+
     """Take a JSON scenario file and plot the AC3RPlus data points."""
-    VehicleTrajectoryVisualizer.plot_ac3rp(scenario_file)
+    VehicleTrajectoryVisualizer.plot_ac3rp(scenario)
 
 
 @cli.command()
-@click.argument('scenario_file', type=click.Path(exists=True))
-def run_from_scenario(scenario_file):
+@click.option('--scenario', required=True, type=click.Path(exists=True), multiple=False,
+              help="Input accident sketch for generating the simulation")
+@click.pass_context
+def run_from(ctx, scenario):
+    # Pass the context of the command down the line
+    ctx.ensure_object(dict)
+
     """Take a JSON scenario file and run the entire search algorithm."""
     # TODO: Can we read some configurations (like fitness function, mutation operators, speed min/max,
     #  and other parameters), so we can add it from there?
-    with open(scenario_file) as file:
+    with open(scenario) as file:
         scenario_data = json.load(file)
     sim_factory = SimulationFactory(CrashScenario.from_json(scenario_data))
     simulation = Simulation(sim_factory=sim_factory, name="test00", debug=True)
@@ -42,9 +57,12 @@ def run_from_scenario(scenario_file):
 
 
 @cli.command()
-@click.argument('scenario_file', type=click.Path(exists=True))
-def evol_scenario(scenario_file):
-    experiment: Experiment = Experiment(scenario_file)
+@click.option('--scenario', required=True, type=click.Path(exists=True), multiple=False,
+              help="Input accident sketch for generating the simulation")
+def evol_scenario(ctx, scenario):
+    # Pass the context of the command down the line
+    ctx.ensure_object(dict)
+    experiment: Experiment = Experiment(scenario)
     experiment.run()
 
 
