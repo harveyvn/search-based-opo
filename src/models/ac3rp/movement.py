@@ -1,4 +1,4 @@
-from models.ac3rp import segment
+from src.models.ac3rp import segment
 from shapely.geometry import Point
 import numpy
 

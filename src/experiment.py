@@ -2,11 +2,11 @@ import json
 import time
 import pathlib
 from evolution import RandomEvolution, OpoEvolution, Mutator, Fitness, Generator, Selector
-from models import categorize_mutator, CONST
-from models.ac3rp import CrashScenario
-from models.mutator import Transformer
+from src.models import categorize_mutator, CONST
+from src.models.ac3rp import CrashScenario
+from src.models.mutator import Transformer
 from typing import List, Dict
-from models import SimulationFactory, Simulation, SimulationScore
+from src.models import SimulationFactory, Simulation, SimulationScore
 
 
 class Experiment:

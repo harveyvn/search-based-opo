@@ -1,9 +1,9 @@
 import time
 import traceback
 from beamngpy import Scenario
-from models import Simulation
-from models.simulation_data import VehicleStateReader, SimulationDataCollector
-from models.simulation_data import SimulationParams, SimulationDataContainer
+from src.models import Simulation
+from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
+from src.models.simulation_data import SimulationParams, SimulationDataContainer
 
 CRASHED = 1
 NO_CRASH = 0

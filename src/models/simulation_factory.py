@@ -1,8 +1,8 @@
 import beamngpy
 import matplotlib.colors as colors
 from typing import List, Tuple
-from models import RoadProfiler, Player
-from models.ac3rp import CrashScenario
+from src.models import RoadProfiler, Player
+from src.models.ac3rp import CrashScenario
 
 
 class SimulationFactory:

@@ -1,7 +1,7 @@
 import numpy
-from models import SimulationFactory, SimulationScore, SimulationExec
-from models.simulation import Simulation
-from models.ac3rp import CrashScenario
+from src.models import SimulationFactory, SimulationScore, SimulationExec
+from src.models.simulation import Simulation
+from src.models.ac3rp import CrashScenario
 
 
 def _write_log_file(simulation: Simulation, simulation_score: SimulationScore, fn,

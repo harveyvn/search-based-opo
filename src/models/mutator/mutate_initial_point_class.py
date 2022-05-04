@@ -1,7 +1,7 @@
-from models.mutator import Mutator
-from models.ac3rp import Vehicle
+from src.models.mutator import Mutator
+from src.models.ac3rp import Vehicle
 from shapely.geometry import LineString, Point
-from models.ac3rp import common
+from src.models.ac3rp import common
 
 
 class MutateInitialPointClass(Mutator):

@@ -1,7 +1,7 @@
 from shapely.geometry import Point
 from math import degrees, atan2, copysign
 from numpy import array, cross, dot
-from models.ac3rp import common
+from src.models.ac3rp import common
 
 PARKING_CONSTRAINT = 0.0001
 

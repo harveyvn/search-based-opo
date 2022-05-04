@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats as stats
-from models.ac3rp import CrashScenario
+from src.models.ac3rp import CrashScenario
 
 
 class Selector:

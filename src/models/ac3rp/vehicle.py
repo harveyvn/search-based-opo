@@ -5,8 +5,8 @@ from shapely.affinity import translate, rotate, scale
 from scipy.spatial import geometric_slerp
 from math import sin, cos, radians
 from typing import List, Tuple
-from models.ac3rp import common
-from models.ac3rp.movement import Movement
+from src.models.ac3rp import common
+from src.models.ac3rp.movement import Movement
 
 SAMPLING_UNIT = 5
 

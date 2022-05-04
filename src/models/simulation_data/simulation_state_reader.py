@@ -1,6 +1,6 @@
 from beamngpy import Vehicle, BeamNGpy
 from .simulation_data import SimulationParams, SimulationDataRecords, SimulationData, SimulationDataRecord
-from models.simulation_data import VehicleStateReader
+from src.models.simulation_data import VehicleStateReader
 
 
 class SimulationDataCollector:

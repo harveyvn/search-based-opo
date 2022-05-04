@@ -1,8 +1,8 @@
 import json
 import unittest
-from models import CONST
-from models.ac3rp import CrashScenario
-from models.mutator import categorize_mutator, Transformer
+from src.models import CONST
+from src.models.ac3rp import CrashScenario
+from src.models.mutator import categorize_mutator, Transformer
 
 
 class TestTransformerClass(unittest.TestCase):

@@ -1,11 +1,10 @@
 import os
 import beamngpy
-import models
 import numpy as np
 from shapely.geometry import Point
 from typing import List
 from beamngpy import BeamNGpy
-from models import SimulationFactory
+from src.models import SimulationFactory, Player
 
 CRASHED = 1
 NO_CRASH = 0
@@ -38,7 +37,7 @@ class Simulation:
         vehicle.update_vehicle()
 
     @staticmethod
-    def collect_vehicle_position(player: models.Player) -> models.Player:
+    def collect_vehicle_position(player: Player) -> Player:
         vehicle = player.vehicle
         current_position = (vehicle.state['pos'][0], vehicle.state['pos'][1])
         player.collect_positions(current_position)
@@ -57,7 +56,7 @@ class Simulation:
         return distance
 
     @staticmethod
-    def trigger_vehicle(player: models.Player, distance_report: float = None, debug: bool = False) -> bool:
+    def trigger_vehicle(player: Player, distance_report: float = None, debug: bool = False) -> bool:
         is_trigger = False
         # The car stills wait until their current distance <= distance_to_trigger
         if distance_report is not None and player.distance_to_trigger > distance_report:
@@ -87,7 +86,7 @@ class Simulation:
             # data_outputs[player.vehicle.vid] = player.get_damage()
             dam_values = list(set([c["damage"] for c in player.get_damage()]))
             if len(dam_values) > 3:
-                from models import KMeans
+                from src.models import KMeans
                 k_means = KMeans(dam_values).model
                 km_dict = {LOW: [], MED: [], HIGH: []}
                 labels = k_means.predict(sorted(k_means.cluster_centers_.tolist()))  # low, med, high ids

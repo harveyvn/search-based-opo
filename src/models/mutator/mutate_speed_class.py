@@ -1,5 +1,5 @@
-from models.mutator import Mutator
-from models.ac3rp import Vehicle
+from src.models.mutator import Mutator
+from src.models.ac3rp import Vehicle
 
 
 class MutateSpeedClass(Mutator):

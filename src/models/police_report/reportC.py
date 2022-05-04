@@ -1,4 +1,4 @@
-from models.police_report import Report
+from src.models.police_report import Report
 from typing import Tuple
 
 """
@@ -20,7 +20,7 @@ class ReportTypeC(Report):
             return [part[1]]
 
     def process(self, outputs: list, targets: list) -> Tuple[int, int, int]:
-        from models import CONST
+        from src.models import CONST
 
         # Validate given output from simulation
         self._validate_output(outputs)

@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from deap import tools, creator, base
-from models.ac3rp import CrashScenario
+from src.models.ac3rp import CrashScenario
 
 FIRST = 0
 

@@ -1,5 +1,5 @@
 import unittest
-from models import KMeans
+from src.models import KMeans
 
 
 class TestKMeans(unittest.TestCase):
