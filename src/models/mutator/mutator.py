@@ -3,7 +3,7 @@ from typing import Tuple
 from abc import ABC, abstractmethod
 import numpy
 import random
-from models.ac3rp import Vehicle
+from src.models.ac3rp import Vehicle
 
 
 class MutatorCreator(ABC):
@@ -74,7 +74,7 @@ class SpeedCreator(MutatorCreator):
     """
 
     def create(self) -> Mutator:
-        from models.mutator import MutateSpeedClass
+        from src.models.mutator import MutateSpeedClass
         return MutateSpeedClass(self.params)
 
 
@@ -85,7 +85,7 @@ class InitialPointCreator(MutatorCreator):
     """
 
     def create(self) -> Mutator:
-        from models.mutator import MutateInitialPointClass
+        from src.models.mutator import MutateInitialPointClass
         return MutateInitialPointClass(self.params)
 
 
@@ -93,7 +93,7 @@ def categorize_mutator(mutator_data: dict) -> MutatorCreator:
     """
     Categorizes the type of mutator
     """
-    from models import CONST
+    from src.models import CONST
 
     mt_type = mutator_data["type"]
     probability = mutator_data["probability"]

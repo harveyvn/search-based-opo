@@ -1,6 +1,6 @@
-from models.ac3rp.vehicle import Vehicle
-from models.ac3rp.road import Road
-from models.ac3rp.report import Report
+from src.models.ac3rp.vehicle import Vehicle
+from src.models.ac3rp.road import Road
+from src.models.ac3rp.report import Report
 from typing import List
 
 

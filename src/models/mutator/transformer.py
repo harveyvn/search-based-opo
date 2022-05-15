@@ -1,8 +1,8 @@
 import copy
 import random
 from typing import List
-from models.mutator import MutatorCreator
-from models.ac3rp import CrashScenario
+from src.models.mutator import MutatorCreator
+from src.models.ac3rp import CrashScenario
 
 
 class Transformer:

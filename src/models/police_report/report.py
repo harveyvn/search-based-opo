@@ -31,7 +31,7 @@ class AnyCreator(ReportCreator):
     """
 
     def create(self) -> Report:
-        from models.police_report import ReportTypeA  # Fix Circular Dependencies
+        from src.models.police_report import ReportTypeA  # Fix Circular Dependencies
         return ReportTypeA()
 
 
@@ -42,7 +42,7 @@ class ComponentCreator(ReportCreator):
     """
 
     def create(self) -> Report:
-        from models.police_report import ReportTypeB  # Fix Circular Dependencies
+        from src.models.police_report import ReportTypeB  # Fix Circular Dependencies
         return ReportTypeB()
 
 
@@ -53,7 +53,7 @@ class SideCreator(ReportCreator):
     """
 
     def create(self) -> Report:
-        from models.police_report import ReportTypeC  # Fix Circular Dependencies
+        from src.models.police_report import ReportTypeC  # Fix Circular Dependencies
         return ReportTypeC()
 
 
@@ -65,7 +65,7 @@ class ComponentSideCreator(ReportCreator):
     """
 
     def create(self) -> Report:
-        from models.police_report import ReportTypeD  # Fix Circular Dependencies
+        from src.models.police_report import ReportTypeD  # Fix Circular Dependencies
         return ReportTypeD()
 
 
@@ -76,7 +76,7 @@ class ComponentSideShortCreator(ReportCreator):
     """
 
     def create(self) -> Report:
-        from models.police_report import ReportTypeBC  # Fix Circular Dependencies
+        from src.models.police_report import ReportTypeBC  # Fix Circular Dependencies
         return ReportTypeBC()
 
 
@@ -137,7 +137,7 @@ class Report(ABC):
 
     @staticmethod
     def _validate_output(outputs: list) -> True:
-        from models import CONST
+        from src.models import CONST
         """
         Verify the validity of given output from simulation
         """
@@ -153,7 +153,7 @@ class Report(ABC):
 
 
 def categorize_report(report_data: list) -> ReportCreator:
-    from models import CONST
+    from src.models import CONST
     """
     Categorizes the type of police report
     """

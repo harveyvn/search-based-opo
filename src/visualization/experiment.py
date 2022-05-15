@@ -4,8 +4,8 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 import json
-from models.ac3rp import CrashScenario
-from models import SimulationFactory, Simulation, SimulationScore
+from src.models.ac3rp import CrashScenario
+from src.models import SimulationFactory, Simulation, SimulationScore
 from .mutation import Mutation
 
 

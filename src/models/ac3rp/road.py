@@ -1,5 +1,5 @@
 from shapely.geometry import LineString
-from models.ac3rp import common
+from src.models.ac3rp import common
 from typing import List
 
 THICKNESS = {

@@ -1,7 +1,7 @@
 import numpy as np
 import traceback
 
-import models
+from src.models import Simulation, Player, categorize_report
 from typing import Tuple, List
 from shapely.geometry import Point
 
@@ -21,7 +21,7 @@ class SimulationScore:
         simulation (models.Simulation): a running simulation of specific scenario
     """
 
-    def __init__(self, simulation: models.Simulation, alpha: float = 0.2, beta: float = 0.1):
+    def __init__(self, simulation: Simulation, alpha: float = 0.2, beta: float = 0.1):
         self.alpha = alpha
         self.beta = beta
         self.simulation = simulation
@@ -33,7 +33,7 @@ class SimulationScore:
         return 1 + (alpha * tpl[MATCHING_CRASH_INDEX]) + (beta * tpl[MATCHING_NONCRASH_INDEX])
 
     @staticmethod
-    def distance_between_two_players(players: List[models.Player]):
+    def distance_between_two_players(players: List[Player]):
         distances = []
         for i in range(len(players[0].positions)):
             p0 = Point(players[0].positions[i][0], players[0].positions[i][1])
@@ -51,7 +51,7 @@ class SimulationScore:
         result = (0, 0, 0)
         for vehicle in data_targets:
             data_target = data_targets[vehicle]
-            creator = models.categorize_report(data_target)
+            creator = categorize_report(data_target)
             data_output = data_outputs[vehicle]
             # Fix the issue when one of v1_damage or v2_damage is empty while other is not.
             # Without if, an exception will be triggered and the damage info will be lost, which

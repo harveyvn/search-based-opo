@@ -1,6 +1,6 @@
 import json
 import unittest
-from models import categorize_report
+from src.models import categorize_report
 
 
 data_targets = json.loads('{"v1":[{"name":"ANY","damage":1.4163608690724}]}')

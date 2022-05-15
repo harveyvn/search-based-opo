@@ -1,4 +1,4 @@
-from models import ScriptFactory
+from src.models import ScriptFactory
 import unittest
 import matplotlib.pyplot as plt
 from shapely.geometry import Point

@@ -1,5 +1,5 @@
 import unittest
-from models import SimulationScore, categorize_report
+from src.models import SimulationScore, categorize_report
 
 
 class TestSimScore(unittest.TestCase):

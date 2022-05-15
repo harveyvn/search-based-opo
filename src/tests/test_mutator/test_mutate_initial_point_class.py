@@ -1,9 +1,9 @@
 import json
 import unittest
 
-import models.mutator.mutator
-from models import categorize_mutator, CONST
-from models.ac3rp import Road, Vehicle
+from src.models.mutator import mutator as mutator_model
+from src.models import categorize_mutator, CONST
+from src.models.ac3rp import Road, Vehicle
 
 
 def get_test_vehicle():
@@ -45,7 +45,7 @@ class TestMutateInitialPointClass(unittest.TestCase):
             "probability": 5,
             "params": {"mean": 0, "std": 15, "min": 10, "max": 50}
         })
-        self.assertEqual(models.mutator.mutator.InitialPointCreator, type(mutator))
+        self.assertEqual(mutator_model.InitialPointCreator, type(mutator))
 
     def test_handle_exception_when_no_mutator_type_found(self):
         expected = Exception

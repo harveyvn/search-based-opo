@@ -1,6 +1,6 @@
 import beamngpy
 import time
-from models.road_profiler import RoadProfiler
+from src.models.road_profiler import RoadProfiler
 from .vehicle_parts_dict import VEHICLE_PARTS_DICT
 
 

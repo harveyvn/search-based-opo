@@ -1,10 +1,10 @@
 import json
 import unittest
 
-import models.mutator.mutator
-from models import categorize_mutator
-from models import CONST
-from models.ac3rp import Road, Vehicle
+from src.models.mutator import mutator as mutator_model
+from src.models import categorize_mutator
+from src.models import CONST
+from src.models.ac3rp import Road, Vehicle
 
 
 def get_test_vehicle():
@@ -46,7 +46,7 @@ class TestMutateSpeedClass(unittest.TestCase):
             "probability": 5,
             "params": {"mean": 0, "std": 15, "min": 10, "max": 50}
         })
-        self.assertEqual(models.mutator.mutator.SpeedCreator, type(mutator))
+        self.assertEqual(mutator_model.SpeedCreator, type(mutator))
 
     def test_vehicle_has_new_speed(self):
         vehicle = get_test_vehicle()
