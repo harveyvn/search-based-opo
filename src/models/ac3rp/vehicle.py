@@ -44,11 +44,12 @@ class Vehicle:
                        color=vehicle_dict["color_code"],
                        road_data=road_data,
                        trajectory=trajectory,
-                       speed=vehicle_dict["speed"])
+                       speed=vehicle_dict["speed"],
+                       delay=vehicle_dict["delay"])
 
     # Rotation defined against NORTH = [0, 1]
     def __init__(self, name, initial_location, initial_rotation,
-                 color, road_data, trajectory=[], distance_to_trigger=-1, speed=0):
+                 color, road_data, trajectory=[], distance_to_trigger=-1, speed=0, delay=0):
         self.name = name
         self.initial_location = Point(initial_location[0], initial_location[1], initial_location[2])
         self.initial_rotation = initial_rotation
@@ -57,6 +58,7 @@ class Vehicle:
         self.distance_to_trigger = distance_to_trigger
         self.trajectory = trajectory
         self.speed = speed
+        self.delay = delay
 
     # def generate_trajectory(self):
     #     # First generate the trajectory, then rotate it according to NORTH

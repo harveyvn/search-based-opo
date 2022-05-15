@@ -14,7 +14,7 @@ class RoadProfiler:
         self.spheres = []
         self.sphere_colors = []
 
-    def compute_ai_script(self, trajectory, color=None):
+    def compute_ai_script(self, trajectory, delay=0, color=None):
         segment_times = [0]
         segment_x = [p[0] for p in trajectory]
         segment_y = [p[1] for p in trajectory]
@@ -33,7 +33,7 @@ class RoadProfiler:
                 'x': x,
                 'y': y,
                 'z': 0,
-                't': t
+                't': t + delay
             }
             self.script.append(node)
             self.points.append([node['x'], node['y'], node['z']])

@@ -69,7 +69,9 @@ class SimulationFactory:
 
             # Create road profiler to drive BeamNG vehicle
             road_pf = RoadProfiler()
-            road_pf.compute_ai_script(trajectory, vehicle.color)
+            road_pf.compute_ai_script(trajectory=trajectory,
+                                      delay=vehicle.delay,
+                                      color=vehicle.color)
 
             # Create a mask vehicle to collect data later
             self.players.append(Player(vehicle=sim_vehicle,
