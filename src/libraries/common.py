@@ -260,3 +260,25 @@ def intersect(list_lst: List[LineString]):
     if point.is_empty:
         return []
     return [point.x, point.y]
+
+
+def get_direction_of(line, deg: 0) -> List[str]:
+    NORTH = 'N'
+    SOUTH = 'S'
+    EAST = 'E'
+    WEST = 'W'
+    alpha = angle([(0, 0), (1, 0)], line) - deg
+    if alpha == 180 or alpha == 0:
+        return [WEST, EAST]
+    if alpha == 90 or alpha == 270:
+        return [NORTH, SOUTH]
+
+    if 0 < alpha < 90:
+        return [EAST, NORTH]
+    if 90 < alpha < 180:
+        return [NORTH, WEST]
+    if 180 < alpha < 270:
+        return [WEST, SOUTH]
+    if 270 < alpha < 360:
+        return [SOUTH, EAST]
+    return []
