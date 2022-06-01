@@ -16,7 +16,7 @@ class Simulation:
         self.sim_factory = sim_factory
         self.name = name
         self.roads: List[beamngpy.Road] = sim_factory.generate_roads()
-        self.players: List[models.Player] = sim_factory.generate_players()
+        self.players: List[Player] = sim_factory.generate_players()
         self.targets: {} = sim_factory.generate_targets()
         self.status: int = NO_CRASH
         self.debug: bool = debug
