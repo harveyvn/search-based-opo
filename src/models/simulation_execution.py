@@ -67,9 +67,9 @@ class SimulationExec:
                 # the number of node from road_pf.script must > 2
                 if len(road_pf.script) > 2:
                     self.simulation.trigger_vehicle(player)
-                    self.beamng.add_debug_line(road_pf.points, road_pf.sphere_colors,
-                                               spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
-                                               cling=True, offset=0.1)
+                    self.beamng.add_debug_spheres(coordinates=road_pf.points,
+                                                  radii=[0.25 for _ in range(len(road_pf.points))],
+                                                  rgba_colors=road_pf.sphere_colors)
                 idx += 1
 
             # We need to compute distance between vehicles if and only if one of two vehicle
