@@ -66,6 +66,7 @@ class SimulationFactory:
                                            licence=vehicle.name,
                                            color=' '.join([str(x) for x in colors.to_rgb(vehicle.color)]))
             sim_vehicle.attach_sensor('damage', beamngpy.sensors.Damage())
+            sim_vehicle.attach_sensor('newstate', beamngpy.sensors.State())
 
             # Create road profiler to drive BeamNG vehicle
             road_pf = RoadProfiler()
