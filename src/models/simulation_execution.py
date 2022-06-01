@@ -13,56 +13,49 @@ class SimulationExec:
     def __init__(self, simulation: Simulation, is_birdview: bool = False):
         self.simulation = simulation
         self.is_birdview: bool = is_birdview
+        self.beamng = self.simulation.init_simulation()
+        self.scenario = None
 
-    def execute_scenario(self, timeout: int = 60):
+    def bring_up(self):
+        self.beamng.open(launch=True)
+
+        self.scenario = Scenario("smallgrid", self.simulation.name)
+
+        # Import roads from scenario obj to beamNG instance
+        for road in self.simulation.roads:
+            self.scenario.add_road(road)
+
+        # Import vehicles from scenario obj to beamNG instance
+        for player in self.simulation.players:
+            self.scenario.add_vehicle(player.vehicle, pos=player.pos,
+                                      rot=player.rot, rot_quat=player.rot_quat)
+
+        # Enable bird view
+        if self.is_birdview:
+            self.simulation.enable_free_cam(self.beamng)
+
+        self.scenario.make(self.beamng)
+
+        self.beamng.set_deterministic()
+
+        self.beamng.load_scenario(self.scenario)
+
+        self.beamng.start_scenario()
+
+        # Pause the simulator only after loading and starting the scenario
+        self.beamng.pause()
+
+    def execute(self, timeout: int = 60):
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
         # -1: 1st and 2nd start at the same time
         distance_to_trigger = -1
         vehicleId_to_trigger = 0
-        # Init BeamNG simulation
-        bng_instance = self.simulation.init_simulation()
-        scenario = Scenario("smallgrid", self.simulation.name)
+        sim_data_collectors = self.init_data_collector()
 
-        # Import roads from scenario obj to beamNG instance
-        for road in self.simulation.roads:
-            scenario.add_road(road)
-
-        # Import vehicles from scenario obj to beamNG instance
-        for player in self.simulation.players:
-            scenario.add_vehicle(player.vehicle, pos=player.pos,
-                                 rot=player.rot, rot_quat=player.rot_quat)
-
-        # BeamNG scenario init
-        scenario.make(bng_instance)
-        bng_instance.open(launch=True)
-        bng_instance.set_deterministic()
-        bng_instance.remove_step_limit()
-
-        # Prepare simulation data collection
-        simulation_id = time.strftime('%Y-%m-%d--%H-%M-%S', time.localtime())
-        simulation_name = 'beamng_executor/sim_$(id)'.replace('$(id)', simulation_id)
-        sim_data_collectors = SimulationDataContainer(debug=self.simulation.debug)
-        for i in range(len(self.simulation.players)):
-            player = self.simulation.players[i]
-            vehicle_state = VehicleStateReader(player.vehicle, bng_instance)
-            sim_data_collectors.append(
-                SimulationDataCollector(player.vehicle,
-                                        bng_instance,
-                                        SimulationParams(beamng_steps=50,
-                                                         delay_msec=int(25 * 0.05 * 1000)),
-                                        vehicle_state_reader=vehicle_state,
-                                        simulation_name=simulation_name + "_v" + str(i + 1))
-            )
         try:
-            bng_instance.load_scenario(scenario)
-            bng_instance.start_scenario()
-
-            # Enable bird view
-            if self.is_birdview:
-                self.simulation.enable_free_cam(bng_instance)
-
+            self.bring_up()
             # Drawing debug line and forcing vehicle moving by given trajectory
             idx = 0
             for player in self.simulation.players:
@@ -74,9 +67,9 @@ class SimulationExec:
                 # the number of node from road_pf.script must > 2
                 if len(road_pf.script) > 2:
                     self.simulation.trigger_vehicle(player)
-                    bng_instance.add_debug_line(road_pf.points, road_pf.sphere_colors,
-                                                spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
-                                                cling=True, offset=0.1)
+                    self.beamng.add_debug_line(road_pf.points, road_pf.sphere_colors,
+                                               spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
+                                               cling=True, offset=0.1)
                 idx += 1
 
             # We need to compute distance between vehicles if and only if one of two vehicle
@@ -90,7 +83,7 @@ class SimulationExec:
             # Begin a scenario
             while time.time() < (start_time + timeout):
                 # Record the vehicle state for every 10 steps
-                bng_instance.step(10, True)
+                self.beamng.step(10)
                 sim_data_collectors.collect()
 
                 # Compute the distance between two vehicles
@@ -108,36 +101,16 @@ class SimulationExec:
                     # Collect the damage sensor information
                     vehicle = player.vehicle
                     # Check whether the imported vehicle existed in beamNG instance or not
-                    if bool(bng_instance.poll_sensors(vehicle)) is False:
+                    if bool(self.beamng.poll_sensors(vehicle)) is False:
                         raise Exception("Exception: Vehicle not found in bng_instance!")
-                    sensor = bng_instance.poll_sensors(vehicle)['damage']
+                    sensor = self.beamng.poll_sensors(vehicle)['damage']
                     if sensor['damage'] != 0:  # Crash detected
                         # Disable AI control
                         self.simulation.disable_vehicle_ai(vehicle)
                         is_crash = True
 
+            self.clean(is_crash)
             sim_data_collectors.end(success=True)
-            if not is_crash:
-                print("Timed out!")
-            else:
-                status_players = [NO_CRASH] * len(self.simulation.players)  # zeros list e.g [0, 0]
-                for i, player in enumerate(self.simulation.players):
-                    vehicle = player.vehicle
-                    sensor = bng_instance.poll_sensors(vehicle)['damage']
-                    if sensor['damage'] != 0:
-                        if not sensor['part_damage']:
-                            # There is a case that a simulation reports a crash damage
-                            # without any damaged components
-                            # player.collect_damage({"etk800_any": {"name": "Any", "damage": 0}})
-                            status_players[i] = NO_CRASH
-                            print("Crash detected! But no broken component is specified!")
-                        else:
-                            status_players[i] = CRASHED
-                            print("Crash detected!")
-                            player.collect_damage(sensor['part_damage'])
-
-                if CRASHED in status_players:  # [1, 0] or [0, 1]
-                    self.simulation.status = CRASHED
 
             # Save the last position of vehicle
             for player in self.simulation.players:
@@ -146,8 +119,59 @@ class SimulationExec:
             sim_data_collectors.save()
             sim_data_collectors.end(success=False, exception=ex)
             traceback.print_exception(type(ex), ex, ex.__traceback__)
-            bng_instance.close()
+            self.close()
         finally:
             sim_data_collectors.save()
-            bng_instance.close()
+            self.close()
             print("Simulation Time: ", time.time() - start_time)
+
+    def clean(self, is_crash: bool):
+        # Analyze the scenario:
+        # - Set a status to a scenario
+        # - Collect broken part of vehicles
+        if not is_crash:
+            print("Timed out!")
+        else:
+            status_players = [NO_CRASH] * len(self.simulation.players)  # zeros list e.g [0, 0]
+            for i, player in enumerate(self.simulation.players):
+                vehicle = player.vehicle
+                sensor = self.beamng.poll_sensors(vehicle)['damage']
+                if sensor['damage'] != 0:
+                    if not sensor['part_damage']:
+                        # There is a case that a simulation reports a crash damage
+                        # without any damaged components
+                        # player.collect_damage({"etk800_any": {"name": "Any", "damage": 0}})
+                        status_players[i] = NO_CRASH
+                        print("Crash detected! But no broken component is specified!")
+                    else:
+                        status_players[i] = CRASHED
+                        print("Crash detected!")
+                        player.collect_damage(sensor['part_damage'])
+
+            if CRASHED in status_players:  # [1, 0] or [0, 1]
+                self.simulation.status = CRASHED
+
+    def close(self):
+        try:
+            if self.beamng:
+                self.beamng.close()
+        except Exception as ex:
+            traceback.print_exception(type(ex), ex, ex.__traceback__)
+
+    def init_data_collector(self) -> SimulationDataContainer:
+        # Prepare simulation data collection
+        simulation_id = time.strftime('%Y-%m-%d--%H-%M-%S', time.localtime())
+        simulation_name = 'beamng_executor/sim_$(id)'.replace('$(id)', simulation_id)
+        sim_data_collectors = SimulationDataContainer(debug=self.simulation.debug)
+        for i in range(len(self.simulation.players)):
+            player = self.simulation.players[i]
+            vehicle_state = VehicleStateReader(player.vehicle, self.beamng)
+            sim_data_collectors.append(
+                SimulationDataCollector(player.vehicle,
+                                        self.beamng,
+                                        SimulationParams(beamng_steps=50,
+                                                         delay_msec=int(25 * 0.05 * 1000)),
+                                        vehicle_state_reader=vehicle_state,
+                                        simulation_name=simulation_name + "_v" + str(i + 1))
+            )
+        return sim_data_collectors
