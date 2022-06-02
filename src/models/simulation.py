@@ -70,8 +70,10 @@ class Simulation:
         if is_trigger:
             vehicle = player.vehicle
             road_pf = player.road_pf
+            target_speed = player.speed
             if len(road_pf.script) > 2:
-                vehicle.ai_set_mode("manual")
+                vehicle.control(throttle=0, steering=0, brake=0, parkingbrake=0)
+                vehicle.set_velocity(velocity=target_speed, dt=1)
                 vehicle.ai_set_script(road_pf.script, cling=False)
 
         # Debug line

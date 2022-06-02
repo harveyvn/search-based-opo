@@ -9,6 +9,18 @@ CRASHED = 1
 NO_CRASH = 0
 
 
+def cal_speed(p1, p2):
+    import math
+    time = p2[2] - p1[2]
+
+    x1, y1 = p1[0], p1[1]
+    x2, y2 = p2[0], p2[1]
+    dist = math.hypot(x2 - x1, y2 - y1)
+    if dist/time < 0.5:
+        return 0
+    return dist/time
+
+
 class SimulationExec:
     def __init__(self, simulation: Simulation, is_birdview: bool = False):
         self.simulation = simulation
@@ -46,6 +58,7 @@ class SimulationExec:
         self.beamng.pause()
 
     def execute(self, timeout: int = 60):
+        is_teleport = False
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
@@ -81,9 +94,10 @@ class SimulationExec:
             start_time = time.time()
 
             # Begin a scenario
+            p0 = (0, 0, 0)
             while time.time() < (start_time + timeout):
                 # Record the vehicle state for every 10 steps
-                self.beamng.step(10)
+                self.beamng.step(1)
                 sim_data_collectors.collect()
 
                 # Compute the distance between two vehicles
@@ -100,6 +114,7 @@ class SimulationExec:
                     self.simulation.collect_vehicle_position(player)
                     # Collect the damage sensor information
                     vehicle = player.vehicle
+                    target_speed = player.speed
                     # Check whether the imported vehicle existed in beamNG instance or not
                     if bool(self.beamng.poll_sensors(vehicle)) is False:
                         raise Exception("Exception: Vehicle not found in bng_instance!")
@@ -108,6 +123,33 @@ class SimulationExec:
                         # Disable AI control
                         self.simulation.disable_vehicle_ai(vehicle)
                         is_crash = True
+                    pos = self.beamng.poll_sensors(vehicle)["state"]["pos"]
+                    timer = self.beamng.poll_sensors(vehicle)["timer"]["time"]
+                    p1 = (pos[0], pos[1], timer)
+                    current_speed = cal_speed(p0, p1)
+                    if is_teleport:
+                        print("Speed: ", current_speed, " m/s")
+                        print("Speed: ", current_speed * 3.6, " km/h")
+                        print("Timer: ", timer)
+                    if current_speed >= target_speed and not is_teleport and p0[2] > 0:
+                        self.beamng.pause()
+                        n_script = []
+                        for n in player.road_pf.script:
+                            n_script.append(
+                                {
+                                    'x': n['x'],
+                                    'y': n['y'],
+                                    'z': 0,
+                                    't': n['t'] + timer
+                                }
+                            )
+
+                        self.beamng.teleport_vehicle(vehicle.vid, player.pos, player.rot)
+                        vehicle.ai_set_script(n_script, cling=False)
+                        is_teleport = True
+                        self.beamng.resume()
+                    print("=====")
+                    p0 = p1
 
             self.clean(is_crash)
             sim_data_collectors.end(success=True)
@@ -124,6 +166,7 @@ class SimulationExec:
             sim_data_collectors.save()
             self.close()
             print("Simulation Time: ", time.time() - start_time)
+            print("is_teleport: ", is_teleport)
 
     def clean(self, is_crash: bool):
         # Analyze the scenario:
