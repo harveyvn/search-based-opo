@@ -20,6 +20,7 @@ class Simulation:
         self.targets: {} = sim_factory.generate_targets()
         self.status: int = NO_CRASH
         self.debug: bool = debug
+        self.center_point = sim_factory.get_center_scenario()
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
@@ -70,7 +71,9 @@ class Simulation:
         if is_trigger:
             vehicle = player.vehicle
             road_pf = player.road_pf
+            script = player.accelerator.script
             if len(road_pf.script) > 2:
+                # vehicle.ai_set_script(script=script)
                 vehicle.ai_set_script(script=road_pf.script)
 
         # Debug line
@@ -104,7 +107,3 @@ class Simulation:
                 data_outputs[player.vehicle.vid] = player.get_damage()
         return data_outputs
 
-    def enable_free_cam(self, bng: BeamNGpy):
-        cam_pos = self.sim_factory.get_center_scenario()
-        cam_dir = (0, 1, -60)
-        bng.set_free_camera(cam_pos, cam_dir)
