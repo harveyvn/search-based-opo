@@ -11,3 +11,4 @@ from .simulation_score import SimulationScore
 from .simulation_execution import SimulationExec
 from .kmeans import KMeans
 from .constant import CONST
+from .accelerator import Accelerator

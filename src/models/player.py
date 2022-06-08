@@ -33,6 +33,7 @@ class Player:
         self.damage = []
         self.times = []
         self.speed = speed
+        self.accelerator = None
 
     def collect_positions(self, position):
         self.positions.append(position)

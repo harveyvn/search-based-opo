@@ -32,3 +32,21 @@ def _VD_A(treatment: List[float], control: List[float]):
     # magnitude = magnitude[bisect_left(levels, abs(scaled_A))]
     estimate = A
     return estimate
+
+
+def cal_speed(p1, p2):
+    import math
+    time = p2[2] - p1[2]
+
+    x1, y1 = p1[0], p1[1]
+    x2, y2 = p2[0], p2[1]
+    dist = math.hypot(x2 - x1, y2 - y1)
+    if dist / time < 0.5:
+        return 0
+    return dist / time
+
+
+def teleport_vehicle_keep_physics(beamng, vid, pos):
+    cmd = f'scenetree.findObject(\'{vid}\'):setPositionNoPhysicsReset(vec3{pos})'
+    print('Running command:', cmd)
+    beamng.queue_lua_command(cmd)
