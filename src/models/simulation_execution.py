@@ -54,7 +54,7 @@ class SimulationExec:
         self.beamng.pause()
 
     def execute(self, timeout: int = 60):
-        is_teleport = False
+        is_teleported = False
         is_valid_to_teleport = [False, False]
         start_time = 0
         is_crash = False
@@ -137,9 +137,9 @@ class SimulationExec:
                         if (player.speed < cur_speed < player.speed + 0.5) and not is_valid_to_teleport[i]:
                             is_valid_to_teleport[i] = True
 
-                # Trigger teleport
-                if any(cond is True for cond in is_valid_to_teleport) and not is_teleport:
-                    is_teleport = self.teleport(self.beamng, self.simulation.players)
+                # Trigger teleport when both cars are ready
+                if all(car is True for car in is_valid_to_teleport) and not is_teleported:
+                    is_teleported = self.teleport(self.beamng, self.simulation.players)
 
             self.clean(is_crash)
             sim_data_collectors.end(success=True)
@@ -157,7 +157,6 @@ class SimulationExec:
             sim_data_collectors.save()
             self.close()
             print("Simulation Time: ", time.time() - start_time)
-            print("is_teleport: ", is_teleport)
 
     def clean(self, is_crash: bool):
         # Analyze the scenario:

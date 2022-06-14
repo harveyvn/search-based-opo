@@ -106,12 +106,17 @@ class SimulationFactory:
             # Is it valid?
             if distance_between_last_points > 50 and not crossed:
                 valid = True
+                print("========================")
+                print(f'Generate accelerator successfully. Chosen eps is {eps}!')
+                print(f'Simulation can run with an initial accelerator!')
+                print(f'Teleport is enabled!')
+                print("========================")
 
             # Time to make decision?
             if retry == 50:  # Try 50 times
                 print("========================")
                 print(f'Failed to generate accelerator. Current eps is {eps}!')
-                print(f'Simulation will run without an initial accelerator.')
+                print(f'Simulation will run without an initial accelerator!')
                 print(f'Teleport is disabled from now!')
                 print("========================")
                 return False
