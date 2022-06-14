@@ -7,7 +7,7 @@ LEFT = 0
 RIGHT = 1
 
 
-class Accelerator:
+class Generator:
     def __init__(self, side, speed, rotation):
         self.sphere_colors = list()
         self.spheres = list()
@@ -16,9 +16,9 @@ class Accelerator:
         self.radii = list()
         self.speed = speed
         if side == LEFT:
-            self.orig = (0, 0, 0)
+            self.orig = (-250, -250, 0)
         else:
-            self.orig = (500, 500, 0)
+            self.orig = (250, 250, 0)
         self.rotation = rotation[2] + 180
 
     def setup(self, is_debug: bool = False):
@@ -28,7 +28,7 @@ class Accelerator:
         trajectory = list()
         color = [1.0, 0.0, 0.0, 1]
 
-        for i in range(500):
+        for i in range(200):
             trajectory.append([
                 orig[0] + i * np.around(np.sin(math.radians(self.rotation)), decimals=5),
                 orig[1] + i * np.around(np.cos(math.radians(self.rotation)), decimals=5),
