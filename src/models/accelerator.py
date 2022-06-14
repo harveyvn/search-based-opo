@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from matplotlib import pyplot as plt
 from src.models.road_profiler import RoadProfiler
@@ -7,7 +8,7 @@ RIGHT = 1
 
 
 class Accelerator:
-    def __init__(self, side, speed):
+    def __init__(self, side, speed, rotation):
         self.sphere_colors = list()
         self.spheres = list()
         self.points = list()
@@ -15,22 +16,22 @@ class Accelerator:
         self.radii = list()
         self.speed = speed
         if side == LEFT:
-            self.orig = (-769.1, 400.8, 0)
+            self.orig = (0, 0, 0)
         else:
-            self.orig = (769.1, 400.8, 0)
-        self.rot_quat = (0, 0, 1, 0)
+            self.orig = (500, 500, 0)
+        self.rotation = rotation[2] + 180
 
     def setup(self, is_debug: bool = False):
+        # Using an initial rotation of the car
+        # Generate a trajectory
         orig = self.orig
         trajectory = list()
         color = [1.0, 0.0, 0.0, 1]
 
-        for i in range(1000):
+        for i in range(500):
             trajectory.append([
-                # 4 * np.sin(np.radians(i)) + orig[0],
-                # i * 2 + orig[1],
-                orig[0],
-                i*2 + orig[1],
+                orig[0] + i * np.around(np.sin(math.radians(self.rotation)), decimals=5),
+                orig[1] + i * np.around(np.cos(math.radians(self.rotation)), decimals=5),
                 self.speed
             ])
 

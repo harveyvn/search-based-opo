@@ -1,8 +1,9 @@
 import time
 import traceback
-from beamngpy import Scenario
+from beamngpy import Scenario, BeamNGpy
 from src.libraries.libs import cal_speed
 from src.models import Simulation
+from src.models.player import Player
 from src.models.accelerator import Accelerator
 from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
 from src.models.simulation_data import SimulationParams, SimulationDataContainer
@@ -12,9 +13,10 @@ NO_CRASH = 0
 
 
 class SimulationExec:
-    def __init__(self, simulation: Simulation, is_birdview: bool = False):
+    def __init__(self, simulation: Simulation, is_birdview: bool = False, is_accelerator: bool = False):
         self.simulation = simulation
         self.is_birdview: bool = is_birdview
+        self.is_accelerator: bool = is_accelerator
         self.beamng = self.simulation.init_simulation()
         self.scenario = None
 
@@ -29,12 +31,14 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for i, player in enumerate(self.simulation.players):
-            player.accelerator = Accelerator(side=i, speed=player.speed)
+            player.accelerator = Accelerator(side=i, speed=player.speed, rotation=player.rot)
             player.accelerator.setup()
-            # self.scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
-            #                           rot=None, rot_quat=player.accelerator.rot_quat)
-            self.scenario.add_vehicle(player.vehicle, pos=player.pos,
-                                      rot=player.rot, rot_quat=player.rot_quat)
+            if self.is_accelerator:
+                self.scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
+                                          rot=player.rot, rot_quat=player.rot_quat)
+            else:
+                self.scenario.add_vehicle(player.vehicle, pos=player.pos,
+                                          rot=player.rot, rot_quat=player.rot_quat)
 
         # Enable bird view
         if self.is_birdview:
@@ -55,6 +59,7 @@ class SimulationExec:
 
     def execute(self, timeout: int = 60):
         is_teleport = False
+        is_valid_to_teleport = [False, False]
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
@@ -76,14 +81,16 @@ class SimulationExec:
                 # ai_set_script not working for parking vehicle, so
                 # the number of node from road_pf.script must > 2
                 if len(road_pf.script) > 2:
-                    # vehicle.ai_set_script(script=player.accelerator.script)
-                    # self.beamng.add_debug_spheres(coordinates=player.accelerator.points,
-                    #                               radii=player.accelerator.radii,
-                    #                               rgba_colors=player.accelerator.sphere_colors)
-                    vehicle.ai_set_script(script=road_pf.script)
-                    self.beamng.add_debug_spheres(coordinates=road_pf.points,
-                                                  radii=road_pf.radii,
-                                                  rgba_colors=road_pf.sphere_colors)
+                    if self.is_accelerator:
+                        vehicle.ai_set_script(script=player.accelerator.script)
+                        self.beamng.add_debug_spheres(coordinates=player.accelerator.points,
+                                                      radii=player.accelerator.radii,
+                                                      rgba_colors=player.accelerator.sphere_colors)
+                    else:
+                        vehicle.ai_set_script(script=road_pf.script)
+                        self.beamng.add_debug_spheres(coordinates=road_pf.points,
+                                                      radii=road_pf.radii,
+                                                      rgba_colors=road_pf.sphere_colors)
 
                 idx += 1
 
@@ -96,11 +103,9 @@ class SimulationExec:
             start_time = time.time()
 
             # Begin a scenario
-            # Starting position (x, y, time)
-            start_pos = (0, 0, 0)
             while time.time() < (start_time + timeout):
                 # Record the vehicle state for every 10 steps
-                self.beamng.step(60)
+                self.beamng.step(10)
                 sim_data_collectors.collect()
 
                 # Compute the distance between two vehicles
@@ -112,12 +117,11 @@ class SimulationExec:
                                                        debug=self.simulation.debug):
                         is_require_computed_distance = False  # No need to compute distance anymore
 
-                for player in self.simulation.players:
+                for i, player in enumerate(self.simulation.players):
                     # Find the position of moving car
-                    self.simulation.collect_vehicle_position(player)
+                    self.simulation.collect_vehicle_position_and_timer(self.beamng, player)
                     # Collect the damage sensor information
                     vehicle = player.vehicle
-                    target_speed = player.speed
                     # Check whether the imported vehicle existed in beamNG instance or not
                     if bool(self.beamng.poll_sensors(vehicle)) is False:
                         raise Exception("Exception: Vehicle not found in bng_instance!")
@@ -127,41 +131,28 @@ class SimulationExec:
                         self.simulation.disable_vehicle_ai(vehicle)
                         is_crash = True
 
-                    # Collect current position and timestamp
-                    pos = self.beamng.poll_sensors(vehicle)["state"]["pos"]
-                    timer = self.beamng.poll_sensors(vehicle)["timer"]["time"]
-                    cur_pos = (pos[0], pos[1], timer)
-                    cur_speed = cal_speed(start_pos, cur_pos)
+                    if self.is_accelerator:
+                        # Calculate current speed
+                        cur_speed = 0
+                        if len(player.positions) > 2:
+                            cur_speed = cal_speed(player.get_pos_and_timer_at(-2), player.get_pos_and_timer_at(-1))
 
-                    # if current_speed >= target_speed and not is_teleport and p0[2] > 0:
-                    #     self.beamng.pause()
-                    #     n_script = []
-                    #     for n in player.road_pf.script:
-                    #         n_script.append(
-                    #             {
-                    #                 'x': n['x'],
-                    #                 'y': n['y'],
-                    #                 'z': 0.5,
-                    #                 't': n['t'] + timer
-                    #             }
-                    #         )
-                    #
-                    #     # self.beamng.teleport_vehicle(vehicle.vid, player.pos, player.rot)
-                    #     cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{player.pos})'
-                    #     self.beamng.queue_lua_command(cmd)
-                    #     vehicle.ai_set_script(script=n_script, cling=True)
-                    #     self.beamng.add_debug_spheres(coordinates=road_pf.points,
-                    #                                   radii=[0.25 for _ in range(len(road_pf.points))],
-                    #                                   rgba_colors=road_pf.sphere_colors)
-                    #     is_teleport = True
-                    #     self.beamng.resume()
+                        # Check if vehicle reaches certain speed
+                        if (player.speed < cur_speed < player.speed + 0.5) and not is_valid_to_teleport[i]:
+                            is_valid_to_teleport[i] = True
+
+                # Trigger teleport
+                if any(cond is True for cond in is_valid_to_teleport) and not is_teleport:
+                    is_teleport = self.teleport(self.beamng, self.simulation.players)
 
             self.clean(is_crash)
             sim_data_collectors.end(success=True)
 
             # Save the last position of vehicle
             for player in self.simulation.players:
-                self.simulation.collect_vehicle_position(player)
+                self.simulation.collect_vehicle_position_and_timer(self.beamng, player)
+
+
         except Exception as ex:
             sim_data_collectors.save()
             sim_data_collectors.end(success=False, exception=ex)
@@ -223,3 +214,34 @@ class SimulationExec:
                                         simulation_name=simulation_name + "_v" + str(i + 1))
             )
         return sim_data_collectors
+
+    def teleport(self, beamng: BeamNGpy, players: [Player]) -> bool:
+        for player in players:
+            vehicle = player.vehicle
+            road_pf = player.road_pf
+            timer = beamng.poll_sensors(vehicle)["timer"]["time"]
+            pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            target_pos = list(player.pos)
+
+            target_pos[2] = pos[2]
+
+            target_pos = tuple(target_pos)
+
+            n_script = []
+            for n in player.road_pf.script:
+                n_script.append(
+                    {
+                        'x': n['x'],
+                        'y': n['y'],
+                        'z': 0,
+                        't': n['t'] + timer
+                    }
+                )
+
+            cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{target_pos})'
+            self.beamng.queue_lua_command(cmd)
+            vehicle.ai_set_script(script=n_script, cling=True)
+            self.beamng.add_debug_spheres(coordinates=road_pf.points,
+                                          radii=road_pf.radii,
+                                          rgba_colors=road_pf.sphere_colors)
+        return True
