@@ -4,7 +4,6 @@ from beamngpy import Scenario, BeamNGpy
 from src.libraries.libs import cal_speed
 from src.models import Simulation
 from src.models.player import Player
-from src.models.accelerator import Accelerator
 from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
 from src.models.simulation_data import SimulationParams, SimulationDataContainer
 
@@ -13,12 +12,11 @@ NO_CRASH = 0
 
 
 class SimulationExec:
-    def __init__(self, simulation: Simulation, is_birdview: bool = False, is_accelerator: bool = False):
+    def __init__(self, simulation: Simulation, is_birdview: bool = False):
         self.simulation = simulation
-        self.is_birdview: bool = is_birdview
-        self.is_accelerator: bool = is_accelerator
         self.beamng = self.simulation.init_simulation()
         self.scenario = None
+        self.is_birdview: bool = is_birdview
 
     def bring_up(self):
         self.beamng.open(launch=True)
@@ -30,10 +28,8 @@ class SimulationExec:
             self.scenario.add_road(road)
 
         # Import vehicles from scenario obj to beamNG instance
-        for i, player in enumerate(self.simulation.players):
-            player.accelerator = Accelerator(side=i, speed=player.speed, rotation=player.rot)
-            player.accelerator.setup()
-            if self.is_accelerator:
+        for player in self.simulation.players:
+            if self.simulation.need_teleport:
                 self.scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
                                           rot=player.rot, rot_quat=player.rot_quat)
             else:
@@ -81,7 +77,7 @@ class SimulationExec:
                 # ai_set_script not working for parking vehicle, so
                 # the number of node from road_pf.script must > 2
                 if len(road_pf.script) > 2:
-                    if self.is_accelerator:
+                    if self.simulation.need_teleport:
                         vehicle.ai_set_script(script=player.accelerator.script)
                         self.beamng.add_debug_spheres(coordinates=player.accelerator.points,
                                                       radii=player.accelerator.radii,
@@ -131,7 +127,7 @@ class SimulationExec:
                         self.simulation.disable_vehicle_ai(vehicle)
                         is_crash = True
 
-                    if self.is_accelerator:
+                    if self.simulation.need_teleport:
                         # Calculate current speed
                         cur_speed = 0
                         if len(player.positions) > 2:
@@ -151,7 +147,6 @@ class SimulationExec:
             # Save the last position of vehicle
             for player in self.simulation.players:
                 self.simulation.collect_vehicle_position_and_timer(self.beamng, player)
-
 
         except Exception as ex:
             sim_data_collectors.save()
@@ -220,11 +215,10 @@ class SimulationExec:
             vehicle = player.vehicle
             road_pf = player.road_pf
             timer = beamng.poll_sensors(vehicle)["timer"]["time"]
-            pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            current_pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+
             target_pos = list(player.pos)
-
-            target_pos[2] = pos[2]
-
+            target_pos[2] = current_pos[2]
             target_pos = tuple(target_pos)
 
             n_script = []

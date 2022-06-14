@@ -1,10 +1,12 @@
 import click
 import json
+import platform
 import numpy as np
-from visualization import Scenario as VehicleTrajectoryVisualizer
 from src.models import SimulationFactory, Simulation, SimulationScore, SimulationExec, CONST
 from src.models.ac3rp import CrashScenario
+from src.models.constant import CONST
 from experiment import Experiment
+from visualization import Scenario as VehicleTrajectoryVisualizer
 
 
 @click.group()
@@ -50,10 +52,13 @@ def run_from(ctx, scenario):
     with open(scenario) as file:
         scenario_data = json.load(file)
     sim_factory = SimulationFactory(CrashScenario.from_json(scenario_data))
-    simulation = Simulation(sim_factory=sim_factory, name="test00", debug=True)
-    SimulationExec(simulation=simulation, is_birdview=True, is_accelerator=True).execute(timeout=45)
-    # print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
-    print(f'{SimulationScore(simulation).get_expected_score(debug=False)}')
+    simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=True, debug=True)
+
+    # Running on Windows only
+    if platform.system() == CONST.WINDOWS:
+        SimulationExec(simulation=simulation, is_birdview=True).execute(timeout=45)
+        print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
+        print(f'{SimulationScore(simulation).get_expected_score(debug=False)}')
 
 
 @cli.command()

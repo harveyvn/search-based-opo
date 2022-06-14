@@ -12,7 +12,7 @@ LOW, MED, HIGH = "LOW", "MED", "HIGH"
 
 
 class Simulation:
-    def __init__(self, name, sim_factory: SimulationFactory, debug: bool = False):
+    def __init__(self, name, sim_factory: SimulationFactory, need_teleport: bool = False, debug: bool = False):
         self.sim_factory = sim_factory
         self.name = name
         self.roads: List[beamngpy.Road] = sim_factory.generate_roads()
@@ -21,6 +21,7 @@ class Simulation:
         self.status: int = NO_CRASH
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
+        self.need_teleport = need_teleport
 
     @staticmethod
     def init_simulation() -> BeamNGpy:

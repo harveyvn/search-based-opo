@@ -3,6 +3,7 @@ import matplotlib.colors as colors
 from typing import List, Tuple
 from src.models import RoadProfiler, Player
 from src.models.ac3rp import CrashScenario
+from src.models.accelerator import Accelerator
 
 
 class SimulationFactory:
@@ -88,6 +89,11 @@ class SimulationFactory:
         for report in self.scenario.reports:
             data_target[report.name] = report.parts
         return data_target
+
+    def generate_accelerator(self):
+        for i, player in enumerate(self.players):
+            player.accelerator = Accelerator(side=i, speed=player.speed, rotation=player.rot)
+            player.accelerator.setup()
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
