@@ -252,10 +252,15 @@ def get_dbscan_labels(X, distance: int = 15, debug: bool = False):
     return labels
 
 
-def intersect(list_lst: List[LineString]):
+def intersect(list_lst: List[LineString], get_distance: bool = False):
     assert len(list_lst) == 2
     first: LineString = list_lst[0]
     last: LineString = list_lst[1]
+    if get_distance:
+        first_point_1, last_point_1 = first.boundary
+        first_point_2, last_point_2 = last.boundary
+        return last_point_1.distance(last_point_2)
+
     point: Point = first.intersection(last)
     if point.is_empty:
         return []
