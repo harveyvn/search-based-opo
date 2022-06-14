@@ -101,7 +101,7 @@ class SimulationExec:
             # Begin a scenario
             while time.time() < (start_time + timeout):
                 # Record the vehicle state for every 10 steps
-                self.beamng.step(10)
+                self.beamng.step(60)
                 sim_data_collectors.collect()
 
                 # Compute the distance between two vehicles
@@ -123,8 +123,7 @@ class SimulationExec:
                         raise Exception("Exception: Vehicle not found in bng_instance!")
                     sensor = self.beamng.poll_sensors(vehicle)['damage']
                     if sensor['damage'] != 0:  # Crash detected
-                        # Disable AI control
-                        self.simulation.disable_vehicle_ai(vehicle)
+                        self.simulation.stop_vehicle(vehicle)
                         is_crash = True
 
                     if self.simulation.need_teleport:

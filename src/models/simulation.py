@@ -34,9 +34,9 @@ class Simulation:
         return BeamNGpy(host, port, bng_home, bng_research)
 
     @staticmethod
-    def disable_vehicle_ai(vehicle: beamngpy.vehicle):
+    def stop_vehicle(vehicle: beamngpy.vehicle):
         vehicle.ai_set_mode('disable')
-        vehicle.ai_set_speed(20 / 3.6, 'set')
+        vehicle.set_velocity(0)
         vehicle.control(throttle=0, steering=0, brake=0, parkingbrake=0)
         vehicle.update_vehicle()
 
