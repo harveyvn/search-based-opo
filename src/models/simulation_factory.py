@@ -99,7 +99,7 @@ class SimulationFactory:
                 player.accelerator = Accelerator(side=i, eps=eps, speed=player.speed, rotation=player.rot)
                 player.accelerator.setup()
 
-            # Check condition
+            # Collect data for checking
             distance_between_last_points = intersect([p.accelerator.get_lst() for p in self.players], True)
             crossed = False if len(intersect([p.accelerator.get_lst() for p in self.players])) == 0 else True
 
