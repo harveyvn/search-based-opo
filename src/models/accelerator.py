@@ -1,14 +1,14 @@
 import math
 import numpy as np
-from matplotlib import pyplot as plt
+from shapely.geometry import LineString
 from src.models.road_profiler import RoadProfiler
 
 LEFT = 0
 RIGHT = 1
 
 
-class Generator:
-    def __init__(self, side, speed, rotation):
+class Accelerator:
+    def __init__(self, eps, side, speed, rotation):
         self.sphere_colors = list()
         self.spheres = list()
         self.points = list()
@@ -16,9 +16,9 @@ class Generator:
         self.radii = list()
         self.speed = speed
         if side == LEFT:
-            self.orig = (-250, -250, 0)
+            self.orig = (-eps, -eps, 0)
         else:
-            self.orig = (250, 250, 0)
+            self.orig = (eps, eps, 0)
         self.rotation = rotation[2] + 180
 
     def setup(self, is_debug: bool = False):
@@ -44,8 +44,5 @@ class Generator:
         self.script = road_pf.script
         self.radii = road_pf.radii
 
-        if is_debug:
-            xs = [p[0] for p in self.points]
-            ys = [p[1] for p in self.points]
-            plt.plot(xs, ys, '.', color=color)
-            plt.show()
+    def get_lst(self):
+        return LineString([(t[0], t[1]) for t in self.points])

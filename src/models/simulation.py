@@ -21,7 +21,9 @@ class Simulation:
         self.status: int = NO_CRASH
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
-        self.need_teleport = need_teleport
+
+        if need_teleport:
+            self.need_teleport = sim_factory.generate_accelerator(debug=debug)
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
