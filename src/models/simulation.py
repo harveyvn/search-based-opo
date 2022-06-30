@@ -4,7 +4,7 @@ import numpy as np
 from shapely.geometry import Point
 from typing import List
 from beamngpy import BeamNGpy
-from src.models import SimulationFactory, Player
+from src.models import SimulationFactory, Player, RoadProfiler
 
 CRASHED = 1
 NO_CRASH = 0
@@ -70,6 +70,17 @@ class Simulation:
         return distance
 
     @staticmethod
+    def render_debug_line(bng_instance: BeamNGpy, road_pf: RoadProfiler):
+        if VERSION == "1.23":
+            bng_instance.add_debug_spheres(coordinates=road_pf.points,
+                                           radii=road_pf.radii,
+                                           rgba_colors=road_pf.sphere_colors)
+        else:
+            bng_instance.add_debug_line(road_pf.points, road_pf.sphere_colors,
+                                        spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
+                                        cling=True, offset=0.1)
+
+    @staticmethod
     def trigger_vehicle(player: Player, distance_report: float = None, debug: bool = False) -> bool:
         is_trigger = False
         # The car stills wait until their current distance <= distance_to_trigger
@@ -93,6 +104,12 @@ class Simulation:
             print(f'Alert! The vehicle starts to move. Distance to Trigger/Current Distance: '
                   f'{str(round(player.distance_to_trigger, 2))}/{str(round(distance_report, 2))}')
         return is_trigger
+
+    @staticmethod
+    def trigger_vehicle_teleport(player: Player):
+        vehicle = player.vehicle
+        vehicle.ai_set_mode("manual")
+        vehicle.ai_set_script(script=player.accelerator.script)
 
     def get_data_outputs(self) -> {}:
         data_outputs = {}

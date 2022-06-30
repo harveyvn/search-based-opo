@@ -1,10 +1,5 @@
-import matplotlib.colors as colors
 from shapely.geometry import Point
-
-
-def pairs(lst):
-    for i in range(1, len(lst)):
-        yield lst[i - 1], lst[i]
+from src.libraries.common import pairs
 
 
 class RoadProfiler:
@@ -13,6 +8,7 @@ class RoadProfiler:
         self.points = []
         self.spheres = []
         self.sphere_colors = []
+        self.radii = []
 
     def compute_ai_script(self, trajectory, delay=0, color=None):
         segment_times = [0]
@@ -39,4 +35,6 @@ class RoadProfiler:
             self.points.append([node['x'], node['y'], node['z']])
             self.spheres.append([node['x'], node['y'], node['z'], 0.25])
             self.sphere_colors.append(color)
+
+        self.radii = [0.25 for _ in range(len(self.points))]
 

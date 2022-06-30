@@ -1,12 +1,15 @@
 import time
 import traceback
-from beamngpy import Scenario
+import beamngpy
+from beamngpy import Scenario, BeamNGpy
 from src.models import Simulation
+from src.models.player import Player
 from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
 from src.models.simulation_data import SimulationParams, SimulationDataContainer
 
 CRASHED = 1
 NO_CRASH = 0
+VERSION = beamngpy.__version__
 
 
 class SimulationExec:
@@ -14,7 +17,7 @@ class SimulationExec:
         self.simulation = simulation
         self.is_birdview: bool = is_birdview
 
-    def execute_scenario(self, timeout: int = 60):
+    def execute(self, timeout: int = 60):
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
@@ -31,8 +34,12 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for player in self.simulation.players:
-            scenario.add_vehicle(player.vehicle, pos=player.pos,
-                                 rot=player.rot, rot_quat=player.rot_quat)
+            if self.simulation.need_teleport:
+                scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
+                                     rot=player.rot, rot_quat=player.rot_quat)
+            else:
+                scenario.add_vehicle(player.vehicle, pos=player.pos,
+                                     rot=player.rot, rot_quat=player.rot_quat)
 
         # BeamNG scenario init
         bng_instance.open(launch=True)
@@ -73,10 +80,13 @@ class SimulationExec:
                 # ai_set_script not working for parking vehicle, so
                 # the number of node from road_pf.script must > 2
                 if len(road_pf.script) > 2:
-                    self.simulation.trigger_vehicle(player)
-                    bng_instance.add_debug_line(road_pf.points, road_pf.sphere_colors,
-                                                spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
-                                                cling=True, offset=0.1)
+                    if self.simulation.need_teleport:
+                        self.simulation.trigger_vehicle_teleport(player)
+                        self.simulation.render_debug_line(bng_instance, player.accelerator)
+                    else:
+                        self.simulation.trigger_vehicle(player)
+                        self.simulation.render_debug_line(bng_instance, road_pf)
+
                 idx += 1
 
             # We need to compute distance between vehicles if and only if one of two vehicle

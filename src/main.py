@@ -52,7 +52,7 @@ def run_from(ctx, scenario):
     with open(scenario) as file:
         scenario_data = json.load(file)
     sim_factory = SimulationFactory(CrashScenario.from_json(scenario_data))
-    simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=False, debug=False)
+    simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=True, debug=True)
 
     # Running on Windows only
     if platform.system() == CONST.WINDOWS:
