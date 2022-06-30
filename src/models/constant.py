@@ -20,6 +20,7 @@ class Constants:
                            {"type": self.CAT_C, "data": self.CAT_C_DATA},
                            {"type": self.CAT_D, "data": self.CAT_D_DATA}]
         self.EMPTY_CRASH = 0
+        self.WINDOWS = "Windows"
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)

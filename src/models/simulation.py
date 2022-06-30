@@ -13,7 +13,7 @@ VERSION = beamngpy.__version__
 
 
 class Simulation:
-    def __init__(self, name, sim_factory: SimulationFactory, debug: bool = False):
+    def __init__(self, name, sim_factory: SimulationFactory, need_teleport: bool = False, debug: bool = False):
         self.sim_factory = sim_factory
         self.name = name
         self.roads: List[beamngpy.Road] = sim_factory.generate_roads()
@@ -21,6 +21,8 @@ class Simulation:
         self.targets: {} = sim_factory.generate_targets()
         self.status: int = NO_CRASH
         self.debug: bool = debug
+        self.center_point = sim_factory.get_center_scenario()
+        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport else False
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
@@ -118,6 +120,6 @@ class Simulation:
         return data_outputs
 
     def enable_free_cam(self, bng: BeamNGpy):
-        cam_pos = self.sim_factory.get_center_scenario()
+        cam_pos = self.center_point
         cam_dir = (0, 1, -60)
         bng.set_free_camera(cam_pos, cam_dir)
