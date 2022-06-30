@@ -40,7 +40,7 @@ class Scenario:
         colors = ["#ffdab9", "#b1c3de"]
         fig = plt.gcf()
         for i, vehicle in enumerate(ac3r_scenario.vehicles):
-            trajectory_points = vehicle.trajectory_points
+            trajectory_points = vehicle.trajectory
             xs = [p[0] for p in trajectory_points]
             ys = [p[1] for p in trajectory_points]
             plt.plot(xs, ys, 'o-', label=vehicle.name, color=colors[i])
