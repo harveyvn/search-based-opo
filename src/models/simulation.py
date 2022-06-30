@@ -9,7 +9,7 @@ from src.models import SimulationFactory, Player, RoadProfiler
 CRASHED = 1
 NO_CRASH = 0
 LOW, MED, HIGH = "LOW", "MED", "HIGH"
-VERSION = beamngpy.__version__
+IS_DEV = True if beamngpy.__version__ == "1.23" else False
 
 
 class Simulation:
@@ -22,11 +22,11 @@ class Simulation:
         self.status: int = NO_CRASH
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
-        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport else False
+        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport and IS_DEV else False
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
-        if VERSION == "1.23":
+        if IS_DEV:
             bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
             bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
         else:
@@ -39,7 +39,7 @@ class Simulation:
     @staticmethod
     def disable_vehicle_ai(vehicle: beamngpy.vehicle):
         vehicle.ai_set_mode('disable')
-        if VERSION == "1.23":
+        if IS_DEV:
             vehicle.set_velocity(0)
         else:
             vehicle.ai_set_speed(0, 'set')
@@ -49,7 +49,7 @@ class Simulation:
     @staticmethod
     def collect_vehicle_position_and_timer(beamng: BeamNGpy, player: Player) -> Player:
         vehicle = player.vehicle
-        if VERSION == "1.23":
+        if IS_DEV:
             pos = beamng.poll_sensors(vehicle)["state"]["pos"]
             current_position = (pos[0], pos[1])
             current_timer = beamng.poll_sensors(vehicle)["timer"]["time"]
@@ -74,7 +74,7 @@ class Simulation:
 
     @staticmethod
     def render_debug_line(bng_instance: BeamNGpy, road_pf: RoadProfiler):
-        if VERSION == "1.23":
+        if IS_DEV:
             bng_instance.add_debug_spheres(coordinates=road_pf.points,
                                            radii=road_pf.radii,
                                            rgba_colors=road_pf.sphere_colors)
@@ -149,7 +149,7 @@ class Simulation:
             vehicle = player.vehicle
             road_pf = player.road_pf
             timer = beamng.poll_sensors(vehicle)["timer"]["time"]
-            if VERSION == "1.23":
+            if IS_DEV:
                 current_pos = beamng.poll_sensors(vehicle)["state"]["pos"]
             else:
                 current_pos = (vehicle.state['pos'][0], vehicle.state['pos'][1], vehicle.state['pos'][2])

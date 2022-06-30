@@ -1,17 +1,14 @@
 import time
 import traceback
-import beamngpy
 import numpy as np
-from beamngpy import Scenario, BeamNGpy
+from beamngpy import Scenario
 from src.libraries.libs import cal_speed
 from src.models import Simulation
-from src.models.player import Player
 from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
 from src.models.simulation_data import SimulationParams, SimulationDataContainer
 
 CRASHED = 1
 NO_CRASH = 0
-VERSION = beamngpy.__version__
 
 
 class SimulationExec:
