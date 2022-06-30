@@ -35,7 +35,9 @@ VEHICLE_PARTS_DICT = {
     "Rear Left Door Glass": "BL",
     "Rear Seats": 'R',
     "Front Sway Bar": 'F',
-    "Stock Intake": 'F'
+    "Stock Intake": 'F',
+    "Stock Engine Mounts": 'F',
+    "Rear Driveshaft": 'M'
 }
 
 # TODO: find a position of this component

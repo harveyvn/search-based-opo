@@ -4,11 +4,12 @@ import numpy as np
 from shapely.geometry import Point
 from typing import List
 from beamngpy import BeamNGpy
-from src.models import SimulationFactory, Player
+from src.models import SimulationFactory, Player, RoadProfiler
 
 CRASHED = 1
 NO_CRASH = 0
 LOW, MED, HIGH = "LOW", "MED", "HIGH"
+IS_DEV = True if beamngpy.__version__ == "1.23" else False
 
 
 class Simulation:
@@ -21,31 +22,43 @@ class Simulation:
         self.status: int = NO_CRASH
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
-        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport else False
+        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport and IS_DEV else False
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
-        bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
-        bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
+        if IS_DEV:
+            bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
+            bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
+        else:
+            bng_home = os.getenv('BNG_HOME')
+            bng_research = os.getenv('BNG_RESEARCH')
         host = '127.0.0.1'
         port = 64257
         return BeamNGpy(host, port, bng_home, bng_research)
 
     @staticmethod
-    def stop_vehicle(vehicle: beamngpy.vehicle):
+    def disable_vehicle_ai(vehicle: beamngpy.vehicle):
         vehicle.ai_set_mode('disable')
-        vehicle.set_velocity(0)
+        if IS_DEV:
+            vehicle.set_velocity(0)
+        else:
+            vehicle.ai_set_speed(0, 'set')
         vehicle.control(throttle=0, steering=0, brake=0, parkingbrake=0)
         vehicle.update_vehicle()
 
     @staticmethod
-    def collect_vehicle_position_and_timer(beamng: BeamNGpy, player: Player):
+    def collect_vehicle_position_and_timer(beamng: BeamNGpy, player: Player) -> Player:
         vehicle = player.vehicle
-        pos = beamng.poll_sensors(vehicle)["state"]["pos"]
-        current_position = (pos[0], pos[1])
-        current_timer = beamng.poll_sensors(vehicle)["timer"]["time"]
-        player.collect_positions(current_position)
-        player.collect_timers(current_timer)
+        if IS_DEV:
+            pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            current_position = (pos[0], pos[1])
+            current_timer = beamng.poll_sensors(vehicle)["timer"]["time"]
+            player.collect_positions(current_position)
+            player.collect_timers(current_timer)
+        else:
+            current_position = (vehicle.state['pos'][0], vehicle.state['pos'][1])
+            player.collect_positions_only(current_position)
+
         return player
 
     def get_vehicles_distance(self, debug: bool = False) -> float:
@@ -58,6 +71,17 @@ class Simulation:
             print("Distances between vehicles: ", distance)
 
         return distance
+
+    @staticmethod
+    def render_debug_line(bng_instance: BeamNGpy, road_pf: RoadProfiler):
+        if IS_DEV:
+            bng_instance.add_debug_spheres(coordinates=road_pf.points,
+                                           radii=road_pf.radii,
+                                           rgba_colors=road_pf.sphere_colors)
+        else:
+            bng_instance.add_debug_line(road_pf.points, road_pf.sphere_colors,
+                                        spheres=road_pf.spheres, sphere_colors=road_pf.sphere_colors,
+                                        cling=True, offset=0.1)
 
     @staticmethod
     def trigger_vehicle(player: Player, distance_report: float = None, debug: bool = False) -> bool:
@@ -74,16 +98,21 @@ class Simulation:
         if is_trigger:
             vehicle = player.vehicle
             road_pf = player.road_pf
-            script = player.accelerator.script
             if len(road_pf.script) > 2:
-                # vehicle.ai_set_script(script=script)
-                vehicle.ai_set_script(script=road_pf.script)
+                vehicle.ai_set_mode("manual")
+                vehicle.ai_set_script(road_pf.script, cling=False)
 
         # Debug line
         if debug is True:
             print(f'Alert! The vehicle starts to move. Distance to Trigger/Current Distance: '
                   f'{str(round(player.distance_to_trigger, 2))}/{str(round(distance_report, 2))}')
         return is_trigger
+
+    @staticmethod
+    def trigger_vehicle_teleport(player: Player):
+        vehicle = player.vehicle
+        vehicle.ai_set_mode("manual")
+        vehicle.ai_set_script(script=player.accelerator.script)
 
     def get_data_outputs(self) -> {}:
         data_outputs = {}
@@ -109,3 +138,40 @@ class Simulation:
             else:
                 data_outputs[player.vehicle.vid] = player.get_damage()
         return data_outputs
+
+    def enable_free_cam(self, bng: BeamNGpy):
+        cam_pos = self.center_point
+        cam_dir = (0, 1, -60)
+        bng.set_free_camera(cam_pos, cam_dir)
+
+    def teleport(self, beamng: BeamNGpy, players: [Player]) -> bool:
+        for player in players:
+            vehicle = player.vehicle
+            road_pf = player.road_pf
+            timer = beamng.poll_sensors(vehicle)["timer"]["time"]
+            if IS_DEV:
+                current_pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            else:
+                current_pos = (vehicle.state['pos'][0], vehicle.state['pos'][1], vehicle.state['pos'][2])
+
+            target_pos = list(player.pos)
+            target_pos[2] = current_pos[2]
+            target_pos = tuple(target_pos)
+
+            n_script = []
+            for n in player.road_pf.script:
+                n_script.append(
+                    {
+                        'x': n['x'],
+                        'y': n['y'],
+                        'z': 0,
+                        't': n['t'] + timer
+                    }
+                )
+
+            cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{target_pos})'
+            beamng.queue_lua_command(cmd)
+            vehicle.ai_set_mode("manual")
+            vehicle.ai_set_script(script=n_script, cling=False)
+            self.render_debug_line(beamng, road_pf)
+        return True

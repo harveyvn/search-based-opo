@@ -35,6 +35,12 @@ class Player:
         self.speed = speed
         self.accelerator = None
 
+    def collect_positions_only(self, position):
+        self.positions.append(position)
+
+    def collect_timers(self, timer):
+        self.times.append(timer)
+
     def collect_positions(self, position):
         self.positions.append(position)
 
