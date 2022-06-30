@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 import scipy.stats as stats
 from bisect import bisect_left
+from shapely.geometry import Point
 
 ROOT: Path = Path(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 PATH_TEST = str(ROOT.joinpath("../tests"))
@@ -32,3 +33,21 @@ def _VD_A(treatment: List[float], control: List[float]):
     # magnitude = magnitude[bisect_left(levels, abs(scaled_A))]
     estimate = A
     return estimate
+
+
+def cal_speed(p1, p2):
+    time = abs(p2[2] - p1[2])
+
+    p1 = Point(p1[0], p1[1])
+    p2 = Point(p2[0], p2[1])
+    dist = p1.distance(p2)
+
+    if dist / time < 0.5:
+        return 0
+    return dist / time
+
+
+def teleport_vehicle_keep_physics(beamng, vid, pos):
+    cmd = f'scenetree.findObject(\'{vid}\'):setPositionNoPhysicsReset(vec3{pos})'
+    print('Running command:', cmd)
+    beamng.queue_lua_command(cmd)

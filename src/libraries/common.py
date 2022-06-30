@@ -252,11 +252,38 @@ def get_dbscan_labels(X, distance: int = 15, debug: bool = False):
     return labels
 
 
-def intersect(list_lst: List[LineString]):
+def intersect(list_lst: List[LineString], get_distance: bool = False):
     assert len(list_lst) == 2
     first: LineString = list_lst[0]
     last: LineString = list_lst[1]
+    if get_distance:
+        first_point_1, last_point_1 = first.boundary
+        first_point_2, last_point_2 = last.boundary
+        return last_point_1.distance(last_point_2)
+
     point: Point = first.intersection(last)
     if point.is_empty:
         return []
     return [point.x, point.y]
+
+
+def get_direction_of(line, deg: 0) -> List[str]:
+    NORTH = 'N'
+    SOUTH = 'S'
+    EAST = 'E'
+    WEST = 'W'
+    alpha = angle([(0, 0), (1, 0)], line) - deg
+    if alpha == 180 or alpha == 0:
+        return [WEST, EAST]
+    if alpha == 90 or alpha == 270:
+        return [NORTH, SOUTH]
+
+    if 0 < alpha < 90:
+        return [EAST, NORTH]
+    if 90 < alpha < 180:
+        return [NORTH, WEST]
+    if 180 < alpha < 270:
+        return [WEST, SOUTH]
+    if 270 < alpha < 360:
+        return [SOUTH, EAST]
+    return []
