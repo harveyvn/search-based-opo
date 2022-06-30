@@ -1,6 +1,7 @@
 import time
 import traceback
 import beamngpy
+import numpy as np
 from beamngpy import Scenario, BeamNGpy
 from src.libraries.libs import cal_speed
 from src.models import Simulation
@@ -21,6 +22,7 @@ class SimulationExec:
     def execute(self, timeout: int = 60):
         is_teleported = False
         is_valid_to_teleport = [False, False]
+        speed_dict_by_vid = {0: [], 1: []}
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
@@ -37,18 +39,19 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for player in self.simulation.players:
+            print(f'Target speed of {player.vehicle.vid}: {player.speed}')
             if self.simulation.need_teleport:
                 scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
                                      rot=player.rot, rot_quat=player.rot_quat)
             else:
                 scenario.add_vehicle(player.vehicle, pos=player.pos,
                                      rot=player.rot, rot_quat=player.rot_quat)
-
+        print("=========")
         # BeamNG scenario init
         bng_instance.open(launch=True)
         scenario.make(bng_instance)
         bng_instance.set_deterministic()
-        bng_instance.remove_step_limit()
+        # bng_instance.remove_step_limit()
 
         # Prepare simulation data collection
         simulation_id = time.strftime('%Y-%m-%d--%H-%M-%S', time.localtime())
@@ -103,7 +106,7 @@ class SimulationExec:
             # Begin a scenario
             while time.time() < (start_time + timeout):
                 # Record the vehicle state for every 10 steps
-                bng_instance.step(10, True)
+                bng_instance.step(10)
                 sim_data_collectors.collect()
 
                 # Compute the distance between two vehicles
@@ -134,10 +137,16 @@ class SimulationExec:
                         cur_speed = 0
                         if len(player.positions) > 2:
                             cur_speed = cal_speed(player.get_pos_and_timer_at(-2), player.get_pos_and_timer_at(-1))
+                            speed_dict_by_vid[i].append(cur_speed)
 
-                        # Check if vehicle reaches certain speed
-                        if (player.speed < cur_speed < player.speed + 0.5) and not is_valid_to_teleport[i]:
-                            is_valid_to_teleport[i] = True
+                        # Waiting to collect at least 20 number of speed
+                        if len(speed_dict_by_vid[i]) > 20:
+                            # Get average of the last 3 latest speed number
+                            avg_speed = np.mean(speed_dict_by_vid[i][-3:])
+                            min_speed = player.speed
+                            max_speed = player.speed + 0.5
+                            if min_speed < avg_speed < max_speed:
+                                is_valid_to_teleport[i] = True
 
                 # Trigger teleport when both cars are ready
                 if all(car is True for car in is_valid_to_teleport) and not is_teleported:
