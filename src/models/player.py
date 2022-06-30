@@ -33,10 +33,17 @@ class Player:
         self.damage = []
         self.times = []
         self.speed = speed
+        self.accelerator = None
+
+    def collect_positions_only(self, position):
+        self.positions.append(position)
+        self.times.append(time.time())
 
     def collect_positions(self, position):
         self.positions.append(position)
-        self.times.append(time.time())
+
+    def collect_timers(self, timer):
+        self.times.append(timer)
 
     def collect_damage(self, damage):
         self.damage.append(damage)
@@ -60,6 +67,9 @@ class Player:
                 print(f'Warning: A part {part_name} is NOT FOUND in a dictionary!')
                 components.append({"name": part_name, "damage": part_damage})
         return components
+
+    def get_pos_and_timer_at(self, index) -> tuple:
+        return self.positions[index][0], self.positions[index][1], self.times[index]
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)

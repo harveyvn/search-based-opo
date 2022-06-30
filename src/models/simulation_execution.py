@@ -104,7 +104,7 @@ class SimulationExec:
 
                 for player in self.simulation.players:
                     # Find the position of moving car
-                    self.simulation.collect_vehicle_position(player)
+                    self.simulation.collect_vehicle_position_and_timer(bng_instance, player)
                     # Collect the damage sensor information
                     vehicle = player.vehicle
                     # Check whether the imported vehicle existed in beamNG instance or not
@@ -141,7 +141,7 @@ class SimulationExec:
 
             # Save the last position of vehicle
             for player in self.simulation.players:
-                self.simulation.collect_vehicle_position(player)
+                self.simulation.collect_vehicle_position_and_timer(bng_instance, player)
         except Exception as ex:
             sim_data_collectors.save()
             sim_data_collectors.end(success=False, exception=ex)

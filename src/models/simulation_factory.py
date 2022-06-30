@@ -3,6 +3,8 @@ import matplotlib.colors as colors
 from typing import List, Tuple
 from src.models import RoadProfiler, Player
 from src.models.ac3rp import CrashScenario
+from src.models.accelerator import Accelerator
+from src.libraries.common import intersect
 
 
 class SimulationFactory:
@@ -88,6 +90,47 @@ class SimulationFactory:
         for report in self.scenario.reports:
             data_target[report.name] = report.parts
         return data_target
+
+    def generate_accelerator(self, debug):
+        retry, eps, valid = 1, 0, False
+        orig = self.get_center_scenario()
+        while not valid:
+            print(f'Try {retry} time(s) with eps is {eps}!')
+            for i, player in enumerate(self.players):
+                player.accelerator = Accelerator(side=i, eps=eps, speed=player.speed, rotation=player.rot, orig=orig)
+                player.accelerator.setup()
+
+            # Collect data for checking
+            distance_between_last_points = intersect([p.accelerator.get_lst() for p in self.players], True)
+            crossed = False if len(intersect([p.accelerator.get_lst() for p in self.players])) == 0 else True
+
+            # Is it valid?
+            if distance_between_last_points > 50 and not crossed:
+                valid = True
+                print("========================")
+                print(f'Generate accelerator successfully. Chosen eps is {eps}!')
+                print(f'Simulation can run with an initial accelerator!')
+                print(f'Teleport is enabled!')
+                print("========================")
+
+            # Time to make decision?
+            if retry == 50:  # Try 50 times
+                print("========================")
+                print(f'Failed to generate accelerator. Current eps is {eps}!')
+                print(f'Simulation will run without an initial accelerator!')
+                print(f'Teleport is disabled from now!')
+                print("========================")
+                return False
+
+            # Adjust the configuration
+            eps += 10
+            retry += 1
+
+        if debug:
+            from src.visualization.simulation_factory import VizSimFactory
+            VizSimFactory(self).plot_generate_accelerator()
+
+        return True
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)

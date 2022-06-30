@@ -9,6 +9,7 @@ from src.models import SimulationFactory, Player
 CRASHED = 1
 NO_CRASH = 0
 LOW, MED, HIGH = "LOW", "MED", "HIGH"
+VERSION = beamngpy.__version__
 
 
 class Simulation:
@@ -23,8 +24,7 @@ class Simulation:
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
-        version = beamngpy.__version__
-        if version == "1.23":
+        if VERSION == "1.23":
             bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
             bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
         else:
@@ -42,10 +42,17 @@ class Simulation:
         vehicle.update_vehicle()
 
     @staticmethod
-    def collect_vehicle_position(player: Player) -> Player:
+    def collect_vehicle_position_and_timer(beamng: BeamNGpy, player: Player) -> Player:
         vehicle = player.vehicle
-        current_position = (vehicle.state['pos'][0], vehicle.state['pos'][1])
-        player.collect_positions(current_position)
+        if VERSION == "1.23":
+            pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            current_position = (pos[0], pos[1])
+            current_timer = beamng.poll_sensors(vehicle)["timer"]["time"]
+            player.collect_positions(current_position)
+            player.collect_timers(current_timer)
+        else:
+            current_position = (vehicle.state['pos'][0], vehicle.state['pos'][1])
+            player.collect_positions_only(current_position)
 
         return player
 
