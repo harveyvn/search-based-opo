@@ -16,15 +16,20 @@ class Simulation:
         self.sim_factory = sim_factory
         self.name = name
         self.roads: List[beamngpy.Road] = sim_factory.generate_roads()
-        self.players: List[models.Player] = sim_factory.generate_players()
+        self.players: List[Player] = sim_factory.generate_players()
         self.targets: {} = sim_factory.generate_targets()
         self.status: int = NO_CRASH
         self.debug: bool = debug
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
-        bng_home = os.getenv('BNG_HOME')
-        bng_research = os.getenv('BNG_RESEARCH')
+        version = beamngpy.__version__
+        if version == "1.23":
+            bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
+            bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
+        else:
+            bng_home = os.getenv('BNG_HOME')
+            bng_research = os.getenv('BNG_RESEARCH')
         host = '127.0.0.1'
         port = 64257
         return BeamNGpy(host, port, bng_home, bng_research)
