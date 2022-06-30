@@ -2,6 +2,7 @@ import time
 import traceback
 import beamngpy
 from beamngpy import Scenario, BeamNGpy
+from src.libraries.libs import cal_speed
 from src.models import Simulation
 from src.models.player import Player
 from src.models.simulation_data import VehicleStateReader, SimulationDataCollector
@@ -18,6 +19,8 @@ class SimulationExec:
         self.is_birdview: bool = is_birdview
 
     def execute(self, timeout: int = 60):
+        is_teleported = False
+        is_valid_to_teleport = [False, False]
         start_time = 0
         is_crash = False
         # Condition to start the 2nd vehicle after driving 1st for a while
@@ -112,7 +115,7 @@ class SimulationExec:
                                                        debug=self.simulation.debug):
                         is_require_computed_distance = False  # No need to compute distance anymore
 
-                for player in self.simulation.players:
+                for i, player in enumerate(self.simulation.players):
                     # Find the position of moving car
                     self.simulation.collect_vehicle_position_and_timer(bng_instance, player)
                     # Collect the damage sensor information
@@ -125,6 +128,20 @@ class SimulationExec:
                         # Disable AI control
                         self.simulation.disable_vehicle_ai(vehicle)
                         is_crash = True
+
+                    if self.simulation.need_teleport:
+                        # Calculate current speed
+                        cur_speed = 0
+                        if len(player.positions) > 2:
+                            cur_speed = cal_speed(player.get_pos_and_timer_at(-2), player.get_pos_and_timer_at(-1))
+
+                        # Check if vehicle reaches certain speed
+                        if (player.speed < cur_speed < player.speed + 0.5) and not is_valid_to_teleport[i]:
+                            is_valid_to_teleport[i] = True
+
+                # Trigger teleport when both cars are ready
+                if all(car is True for car in is_valid_to_teleport) and not is_teleported:
+                    is_teleported = self.simulation.teleport(bng_instance, self.simulation.players)
 
             sim_data_collectors.end(success=True)
             if not is_crash:

@@ -39,7 +39,10 @@ class Simulation:
     @staticmethod
     def disable_vehicle_ai(vehicle: beamngpy.vehicle):
         vehicle.ai_set_mode('disable')
-        vehicle.ai_set_speed(20 / 3.6, 'set')
+        if VERSION == "1.23":
+            vehicle.set_velocity(0)
+        else:
+            vehicle.ai_set_speed(0, 'set')
         vehicle.control(throttle=0, steering=0, brake=0, parkingbrake=0)
         vehicle.update_vehicle()
 
@@ -140,3 +143,35 @@ class Simulation:
         cam_pos = self.center_point
         cam_dir = (0, 1, -60)
         bng.set_free_camera(cam_pos, cam_dir)
+
+    def teleport(self, beamng: BeamNGpy, players: [Player]) -> bool:
+        for player in players:
+            vehicle = player.vehicle
+            road_pf = player.road_pf
+            timer = beamng.poll_sensors(vehicle)["timer"]["time"]
+            if VERSION == "1.23":
+                current_pos = beamng.poll_sensors(vehicle)["state"]["pos"]
+            else:
+                current_pos = (vehicle.state['pos'][0], vehicle.state['pos'][1], vehicle.state['pos'][2])
+
+            target_pos = list(player.pos)
+            target_pos[2] = current_pos[2]
+            target_pos = tuple(target_pos)
+
+            n_script = []
+            for n in player.road_pf.script:
+                n_script.append(
+                    {
+                        'x': n['x'],
+                        'y': n['y'],
+                        'z': 0,
+                        't': n['t'] + timer
+                    }
+                )
+
+            cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{target_pos})'
+            beamng.queue_lua_command(cmd)
+            vehicle.ai_set_mode("manual")
+            vehicle.ai_set_script(script=n_script, cling=False)
+            self.render_debug_line(beamng, road_pf)
+        return True
