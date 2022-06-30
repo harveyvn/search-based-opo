@@ -93,10 +93,11 @@ class SimulationFactory:
 
     def generate_accelerator(self, debug):
         retry, eps, valid = 1, 0, False
+        orig = self.get_center_scenario()
         while not valid:
             print(f'Try {retry} time(s) with eps is {eps}!')
             for i, player in enumerate(self.players):
-                player.accelerator = Accelerator(side=i, eps=eps, speed=player.speed, rotation=player.rot)
+                player.accelerator = Accelerator(side=i, eps=eps, speed=player.speed, rotation=player.rot, orig=orig)
                 player.accelerator.setup()
 
             # Collect data for checking

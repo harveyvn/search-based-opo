@@ -21,14 +21,12 @@ class Simulation:
         self.status: int = NO_CRASH
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
-
-        if need_teleport:
-            self.need_teleport = sim_factory.generate_accelerator(debug=debug)
+        self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport else False
 
     @staticmethod
     def init_simulation() -> BeamNGpy:
-        bng_home = os.getenv('BNG_HOME')
-        bng_research = os.getenv('BNG_RESEARCH')
+        bng_home = "D:\\BeamNG.drive-0.25.0.0.DEV13908"
+        bng_research = "D:\\BeamNG.drive-0.25.0.0.DEV13908_userpath"
         host = '127.0.0.1'
         port = 64257
         return BeamNGpy(host, port, bng_home, bng_research)
@@ -111,4 +109,3 @@ class Simulation:
             else:
                 data_outputs[player.vehicle.vid] = player.get_damage()
         return data_outputs
-

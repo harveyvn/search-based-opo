@@ -19,8 +19,6 @@ class SimulationExec:
         self.is_birdview: bool = is_birdview
 
     def bring_up(self):
-        self.beamng.open(launch=True)
-
         self.scenario = Scenario("smallgrid", self.simulation.name)
 
         # Import roads from scenario obj to beamNG instance
@@ -43,15 +41,10 @@ class SimulationExec:
             self.beamng.set_free_camera(cam_pos, cam_dir)
 
         self.scenario.make(self.beamng)
-
-        self.beamng.set_deterministic()
-
+        self.beamng.open(launch=True)
         self.beamng.load_scenario(self.scenario)
-
         self.beamng.start_scenario()
-
-        # Pause the simulator only after loading and starting the scenario
-        self.beamng.pause()
+        self.beamng.set_deterministic()
 
     def execute(self, timeout: int = 60):
         is_teleported = False
@@ -68,7 +61,9 @@ class SimulationExec:
             self.bring_up()
             # Drawing debug line and forcing vehicle moving by given trajectory
             idx = 0
-            for player in self.simulation.players:
+            for i, player in enumerate(self.simulation.players):
+                if i == 1:
+                    continue
                 vehicle = player.vehicle
                 road_pf = player.road_pf
                 if player.distance_to_trigger > 0:
@@ -83,6 +78,7 @@ class SimulationExec:
                                                       radii=player.accelerator.radii,
                                                       rgba_colors=player.accelerator.sphere_colors)
                     else:
+                        print("Ai set script")
                         vehicle.ai_set_script(script=road_pf.script)
                         self.beamng.add_debug_spheres(coordinates=road_pf.points,
                                                       radii=road_pf.radii,

@@ -8,7 +8,7 @@ RIGHT = 1
 
 
 class Accelerator:
-    def __init__(self, eps, side, speed, rotation):
+    def __init__(self, eps, side, speed, rotation, orig=(0, 0, 0)):
         self.sphere_colors = list()
         self.spheres = list()
         self.points = list()
@@ -16,9 +16,12 @@ class Accelerator:
         self.radii = list()
         self.speed = speed
         if side == LEFT:
-            self.orig = (-eps, -eps, 0)
+            x = -eps + orig[0]
+            y = -eps + orig[1]
         else:
-            self.orig = (eps, eps, 0)
+            x = eps + orig[0]
+            y = eps + orig[1]
+        self.orig = (x, y, 0)
         self.rotation = rotation[2] + 180
 
     def setup(self, is_debug: bool = False):
