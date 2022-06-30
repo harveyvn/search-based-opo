@@ -35,8 +35,8 @@ class SimulationExec:
                                  rot=player.rot, rot_quat=player.rot_quat)
 
         # BeamNG scenario init
-        scenario.make(bng_instance)
         bng_instance.open(launch=True)
+        scenario.make(bng_instance)
         bng_instance.set_deterministic()
         bng_instance.remove_step_limit()
 
