@@ -12,6 +12,7 @@ class SimulationFactory:
         self.scenario: CrashScenario = scenario
         self.roads: List[beamngpy.Road] = []
         self.players: List[Player] = []
+        self.weather = scenario.weather
 
     def set_scenario(self, scenario: CrashScenario):
         self.scenario = scenario

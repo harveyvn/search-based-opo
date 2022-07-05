@@ -68,6 +68,7 @@ class SimulationExec:
         try:
             bng_instance.load_scenario(scenario)
             bng_instance.start_scenario()
+            bng_instance.set_weather_preset(self.simulation.weather)
 
             # Enable bird view
             if self.is_birdview:

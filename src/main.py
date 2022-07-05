@@ -53,7 +53,7 @@ def run_from(ctx, scenario):
         ac3r_data = json.load(file)
 
     sim_factory = SimulationFactory(CrashScenario.from_json(crisce_data, ac3r_data))
-    simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=True, debug=True)
+    simulation = Simulation(sim_factory=sim_factory, name=scenario.split('\\')[1], need_teleport=True, debug=False)
 
     # Running on Windows only
     if platform.system() == CONST.WINDOWS:
@@ -100,7 +100,7 @@ def execute_searching_from(scenario_files):
             case_name = scenario["name"]
             path = scenario["path"]
             # Random Search
-            for i in np.arange(start=1, stop=11, step=1):
+            for i in np.arange(start=1, stop=3, step=1):
                 sim_name: str = f'{(mutator_dict["name"].title() + "_Random")}_{str(i)}'
                 print(f'Case {case_name}: Level {sim_name}...')
                 exp: Experiment = Experiment(file_path=path,
@@ -108,11 +108,11 @@ def execute_searching_from(scenario_files):
                                              simulation_name=sim_name,
                                              mutators=mutator_dict["mutators"],
                                              method_name=CONST.RANDOM,
-                                             epochs=30)
+                                             epochs=3)
                 exp.run()
 
             # OpO Search
-            for i in np.arange(start=1, stop=11, step=1):
+            for i in np.arange(start=1, stop=3, step=1):
                 sim_name: str = f'{(mutator_dict["name"].title() + "_OpO")}_{str(i)}'
                 print(f'Case {case_name}: Level {sim_name}...')
                 exp: Experiment = Experiment(file_path=path,
@@ -120,17 +120,17 @@ def execute_searching_from(scenario_files):
                                              simulation_name=sim_name,
                                              mutators=mutator_dict["mutators"],
                                              method_name=CONST.OPO,
-                                             epochs=30)
+                                             epochs=3)
                 exp.run()
             print("=========")
 
 
 # make sure we invoke cli
 if __name__ == '__main__':
-    cli()
-    exit()
+    # cli()
+    # exit()
     scenarios = [
-        {"name": "129224", "path": "ciren/148154"},
+        {"name": "129224", "path": "ciren/148154/data.json"},
     ]
 
     execute_searching_from(scenarios)
