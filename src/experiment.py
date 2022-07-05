@@ -29,7 +29,7 @@ class Experiment:
                 self.ac3r_data = json.load(file)
 
             sim_factory = SimulationFactory(CrashScenario.from_json(self.scenario, self.ac3r_data))
-            simulation = Simulation(sim_factory=sim_factory, name=self.simulation_name, need_teleport=True)
+            simulation = Simulation(sim_factory=sim_factory, name=self.case_name, need_teleport=True)
             self.threshold = SimulationScore(simulation).get_expected_score()
         except Exception as ex:
             print(f'Scenario is not found. Exception: {ex}!')
