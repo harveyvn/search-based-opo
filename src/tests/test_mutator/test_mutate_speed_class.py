@@ -26,7 +26,7 @@ class TestMutateSpeedClass(unittest.TestCase):
         self.assertEqual(mutator_model.SpeedCreator, type(mutator))
 
     def test_vehicle_has_new_speed(self):
-        with open("../../ciren/148154/data.json") as file:
+        with open("../ciren/148154/data.json") as file:
             scenario_data = json.load(file)
         scenario = CrashScenario.from_json(crisce_json_data=scenario_data)
         vehicle = scenario.vehicles[0]

@@ -34,7 +34,7 @@ class TestMutateInitialPointClass(unittest.TestCase):
             })
 
     def test_vehicle_has_new_initial_point(self):
-        with open("../../ciren/148154/data.json") as file:
+        with open("../ciren/148154/data.json") as file:
             scenario_data = json.load(file)
         scenario = CrashScenario.from_json(crisce_json_data=scenario_data)
         vehicle = scenario.vehicles[0]

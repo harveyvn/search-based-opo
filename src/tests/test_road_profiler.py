@@ -9,7 +9,7 @@ class RoadProfilerTest(unittest.TestCase):
         points = ScriptFactory(p1_test[0], p1_test[1], p2_test[0], p2_test[1]).compute_scripts()
         color = "1 0 0"
         road_pf = RoadProfiler()
-        road_pf.compute_ai_script(points, color)
+        road_pf.compute_ai_script(trajectory=points, color=color)
 
         sample_script = [{'x': -2.0, 'y': 86.84551724137933, 'z': 0, 't': 0},
                          {'x': -2.0, 'y': 81.84551724137933, 'z': 0, 't': 0.6},
