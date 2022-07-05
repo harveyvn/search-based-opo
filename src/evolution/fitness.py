@@ -51,7 +51,7 @@ class Fitness:
             simulation_score = SimulationScore(simulation)
 
             # Execute scenario
-            SimulationExec(simulation).execute_scenario(timeout=40)
+            SimulationExec(simulation).execute(timeout=40)
             scores.append(simulation_score.calculate())  # get the score
 
             # Logging
