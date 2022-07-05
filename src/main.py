@@ -59,7 +59,7 @@ def run_from(ctx, scenario):
     if platform.system() == CONST.WINDOWS:
         SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=20)
         print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
-        print(f'{SimulationScore(simulation).get_expected_score(debug=False)}')
+        print(f'Expected Score: {SimulationScore(simulation).get_expected_score(debug=False)}')
 
 
 @cli.command()

@@ -32,7 +32,7 @@ class CrashScenario:
 
         vehicles = []
         for i, vehicle_dict in enumerate(crisce_json_data["vehicles"]):
-            key = f'V{i}'
+            key = f'v{i+1}'
             vehicles.append(Vehicle.from_dict(key, vehicle_dict, roads))
 
         reports = []
