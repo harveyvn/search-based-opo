@@ -47,11 +47,12 @@ def run_from(ctx, scenario):
     ctx.ensure_object(dict)
 
     """Take a JSON scenario file and run the entire search algorithm."""
-    # TODO: Can we read some configurations (like fitness function, mutation operators, speed min/max,
-    #  and other parameters), so we can add it from there?
     with open(scenario) as file:
-        scenario_data = json.load(file)
-    sim_factory = SimulationFactory(CrashScenario.from_json(scenario_data))
+        crisce_data = json.load(file)
+    with open(scenario.replace("data", "text")) as file:
+        ac3r_data = json.load(file)
+
+    sim_factory = SimulationFactory(CrashScenario.from_json(crisce_data, ac3r_data))
     simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=True, debug=True)
 
     # Running on Windows only
@@ -129,7 +130,7 @@ if __name__ == '__main__':
     cli()
     exit()
     scenarios = [
-        {"name": "129224", "path": "ciren/129224/data.json"},
+        {"name": "129224", "path": "ciren/148154"},
     ]
 
     execute_searching_from(scenarios)
