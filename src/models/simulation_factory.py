@@ -61,7 +61,7 @@ class SimulationFactory:
 
     def generate_players(self) -> List[Player]:
         for vehicle in self.scenario.vehicles:
-            trajectory = vehicle.trajectory
+            trajectory = vehicle.movement.trajectory
             initial_position = (trajectory[0][0], trajectory[0][1], 0)
             # Create BeamNG Vehicle for simulation
             sim_vehicle = beamngpy.Vehicle(str(vehicle.name),

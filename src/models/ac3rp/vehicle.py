@@ -56,9 +56,9 @@ class Vehicle:
         self.color = color
         self.road_data = road_data
         self.distance_to_trigger = distance_to_trigger
-        self.trajectory = trajectory
         self.speed = speed
         self.delay = delay
+        self.movement = Movement(trajectory)
 
     # def generate_trajectory(self):
     #     # First generate the trajectory, then rotate it according to NORTH

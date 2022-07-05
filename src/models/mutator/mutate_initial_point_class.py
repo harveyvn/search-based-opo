@@ -11,7 +11,7 @@ class MutateInitialPointClass(Mutator):
 
     def process(self, vehicle: Vehicle, is_random=False) -> Vehicle:
         # Not working for parked car
-        if len(vehicle.movement.get_driving_actions()) == 1:
+        if len(vehicle.movement.trajectory) == 1:
             return vehicle
 
         # Define an expected distance to move an initial point
