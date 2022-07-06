@@ -8,6 +8,9 @@ from src.models.constant import CONST
 from experiment import Experiment
 from visualization import Scenario as VehicleTrajectoryVisualizer
 
+import warnings
+warnings.filterwarnings('ignore')
+
 
 @click.group()
 def cli():
