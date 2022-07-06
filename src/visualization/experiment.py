@@ -38,7 +38,7 @@ class ExperimentVisualizer:
         df = pd.DataFrame()
         dfs = []
         for i in np.arange(start=1, stop=11, step=1):
-            df_tmp = self.process_individual(f'data/{self.case}/{mutator}_{algorithm}_{i}.csv', f'score_{i}')
+            df_tmp = self.process_individual(f'outputs/{self.case}/{mutator}_{algorithm}_{i}.csv', f'score_{i}')
             dfs.append(df_tmp)
         df = pd.concat(dfs, axis=1)
         df[algorithm] = df.mean(numeric_only=True, axis=1)
@@ -152,7 +152,7 @@ class ExperimentVisualizer:
             ax.set_ylim(self.ylim)
 
         plt.show()
-        fig.savefig(f'data/{self.case}/Plot - Multiple.png', bbox_inches="tight")
+        fig.savefig(f'outputs/{self.case}/Plot - Multiple.png', bbox_inches="tight")
 
     def visualize_box_plot(self):
         df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
@@ -191,4 +191,4 @@ class ExperimentVisualizer:
             ax.yaxis.label.set_visible(False)
 
         plt.show()
-        fig.savefig(f'data/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")
+        fig.savefig(f'outputs/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")

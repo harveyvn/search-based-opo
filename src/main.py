@@ -6,7 +6,7 @@ from src.models import SimulationFactory, Simulation, SimulationScore, Simulatio
 from src.models.ac3rp import CrashScenario
 from src.models.constant import CONST
 from experiment import Experiment
-from visualization import Scenario as VehicleTrajectoryVisualizer
+from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -103,7 +103,7 @@ def execute_searching_from(scenario_files):
             case_name = scenario["name"]
             path = scenario["path"]
             # Random Search
-            for i in np.arange(start=1, stop=3, step=1):
+            for i in np.arange(start=1, stop=11, step=1):
                 sim_name: str = f'{(mutator_dict["name"].title() + "_Random")}_{str(i)}'
                 print(f'Case {case_name}: Level {sim_name}...')
                 exp: Experiment = Experiment(file_path=path,
@@ -111,11 +111,11 @@ def execute_searching_from(scenario_files):
                                              simulation_name=sim_name,
                                              mutators=mutator_dict["mutators"],
                                              method_name=CONST.RANDOM,
-                                             epochs=3)
+                                             epochs=30)
                 exp.run()
 
             # OpO Search
-            for i in np.arange(start=1, stop=3, step=1):
+            for i in np.arange(start=1, stop=11, step=1):
                 sim_name: str = f'{(mutator_dict["name"].title() + "_OpO")}_{str(i)}'
                 print(f'Case {case_name}: Level {sim_name}...')
                 exp: Experiment = Experiment(file_path=path,
@@ -123,7 +123,7 @@ def execute_searching_from(scenario_files):
                                              simulation_name=sim_name,
                                              mutators=mutator_dict["mutators"],
                                              method_name=CONST.OPO,
-                                             epochs=3)
+                                             epochs=30)
                 exp.run()
             print("=========")
 
@@ -133,7 +133,13 @@ if __name__ == '__main__':
     # cli()
     # exit()
     scenarios = [
-        {"name": "148154", "path": "ciren/148154/data.json"},
+        # {"name": "148154", "path": "ciren/148154/data.json"},
+        {"name": "129224", "path": "ciren/129224/data.json"},
     ]
 
     execute_searching_from(scenarios)
+
+    # soo = ExperimentVisualizer("ciren/148154/data.json", [1.5, 2], [1.5, 2])
+    # soo.visualize()
+    # soo.visualize_box_plot()
+
