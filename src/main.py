@@ -130,7 +130,7 @@ if __name__ == '__main__':
     # cli()
     # exit()
     scenarios = [
-        {"name": "129224", "path": "ciren/148154/data.json"},
+        {"name": "148154", "path": "ciren/148154/data.json"},
     ]
 
     execute_searching_from(scenarios)

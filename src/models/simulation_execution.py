@@ -36,14 +36,12 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for player in self.simulation.players:
-            print(f'Target speed of {player.vehicle.vid}: {player.speed}')
             if self.simulation.need_teleport:
                 scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
                                      rot=player.rot, rot_quat=player.rot_quat)
             else:
                 scenario.add_vehicle(player.vehicle, pos=player.pos,
                                      rot=player.rot, rot_quat=player.rot_quat)
-        print("=========")
         # BeamNG scenario init
         bng_instance.open(launch=True)
         scenario.make(bng_instance)

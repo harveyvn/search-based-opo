@@ -47,7 +47,7 @@ class Fitness:
         scores = []
         for _ in range(repetitions):
             sim_factory = SimulationFactory(individual)
-            simulation = Simulation(sim_factory=sim_factory)
+            simulation = Simulation(sim_factory=sim_factory, name=individual.name, need_teleport=True)
             simulation_score = SimulationScore(simulation)
 
             # Execute scenario
