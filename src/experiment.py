@@ -48,6 +48,7 @@ class Experiment:
     def _run_rev(self):
         # Write data file
         pathlib.Path(f'outputs/{self.case_name}/').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(f'outputs/{self.case_name}/log').mkdir(parents=True, exist_ok=True)
         rev_logfile = open(f'outputs/{self.case_name}/{self.simulation_name}.csv', "a")
         rev_logfile.write("v1,v2,score\n")
         rev_log_data_file = f'outputs/{self.case_name}/log/{self.simulation_name}.csv'
