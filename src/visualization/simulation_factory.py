@@ -13,7 +13,7 @@ class VizSimFactory:
         berlin_now = datetime.now(pytz.timezone('Europe/Berlin')).strftime("%Y%m%d_%I%M%S")
         dist_x, dist_y = 0, 0
         fig = plt.gcf()
-        colors = [["#82ABF5", "#0000FF"], ["#FC6565", "#FF0000"]]
+        colors = [["#FC6565", "#FF0000"], ["#82ABF5", "#0000FF"]]
 
         # Render roads
         for i, road in enumerate(self.sf.scenario.roads):
@@ -48,3 +48,39 @@ class VizSimFactory:
         plt.gca().set_aspect('equal')
         plt.show()
         fig.savefig(f'debug/generate_accelerator_{berlin_now}.png', bbox_inches="tight")
+
+    def plot_vehicle_road_bbox(self, url: str = None):
+        berlin_now = datetime.now(pytz.timezone('Europe/Berlin')).strftime("%Y%m%d_%I%M%S")
+        dist_x, dist_y = 0, 0
+        fig = plt.gcf()
+        colors = [["#FC6565", "#FF0000"], ["#82ABF5", "#0000FF"]]
+
+        # Render roads
+        for i, road in enumerate(self.sf.scenario.roads):
+            road_nodes = road.road_nodes
+            lst = LineString([(t[0] + dist_x, t[1] + dist_y) for t in road_nodes])
+            road_poly = lst.buffer(road.road_width, cap_style=2, join_style=2)
+            road_patch = PolygonPatch(road_poly, fc="gray", ec="dimgray")
+            plt.gca().add_patch(road_patch)
+            xs = [p[0] + dist_x for p in road_nodes]
+            ys = [p[1] + dist_y for p in road_nodes]
+            plt.plot(xs, ys, '-', color="#9c9c9c")
+
+        # Render vehicles
+        for i, vehicle in enumerate(self.sf.scenario.vehicles):
+            trajectory_points = vehicle.movement.trajectory
+            xs = [p[0] for p in trajectory_points]
+            ys = [p[1] for p in trajectory_points]
+            plt.plot(xs, ys, '-', label=vehicle.name, color=colors[i][0])
+
+        # Render bbox
+        for i, player in enumerate(self.sf.players):
+            for p in player.bbox:
+                plt.plot(p[0], p[1], 'r-' if i == 0 else 'b-')
+
+        plt.title(url.split('/')[-1].replace(".png", ''))
+        plt.gca().set_aspect('equal')
+        plt.show()
+        fig.savefig(f'debug/generate_accelerator_{berlin_now}.png' if url is None else url, bbox_inches="tight")
+
+

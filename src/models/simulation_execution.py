@@ -148,6 +148,28 @@ class SimulationExec:
                 if all(car is True for car in is_valid_to_teleport) and not is_teleported:
                     is_teleported = self.simulation.teleport(bng_instance, self.simulation.players)
 
+                # Collect bbox coordinates
+                if is_teleported:
+                    for i, player in enumerate(self.simulation.players):
+                        bbox = player.vehicle.get_bbox()
+                        boundary_x = [
+                            bbox['front_bottom_left'][0],
+                            bbox['front_bottom_right'][0],
+                            bbox['rear_bottom_right'][0],
+                            bbox['rear_bottom_left'][0],
+                            bbox['front_bottom_left'][0],
+                        ]
+                        boundary_y = [
+                            bbox['front_bottom_left'][1],
+                            bbox['front_bottom_right'][1],
+                            bbox['rear_bottom_right'][1],
+                            bbox['rear_bottom_left'][1],
+                            bbox['front_bottom_left'][1],
+                        ]
+                        player.bbox.append((boundary_x, boundary_y))
+
+            # ======== END WHILE =========
+
             sim_data_collectors.end(success=True)
             if not is_crash:
                 print("Timed out!")
