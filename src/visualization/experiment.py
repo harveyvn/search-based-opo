@@ -170,14 +170,14 @@ class ExperimentVisualizer:
         sns.swarmplot(x='Epoch', y='Score', data=df_rand_m1, color="k", ax=ax[0])
         axs.append(ax[0])
 
-        ax[1].title.set_text('Multiple Random')
-        sns.violinplot(x='Epoch', y='Score', data=df_rand_m2, color="0.95", ax=ax[1])
-        sns.swarmplot(x='Epoch', y='Score', data=df_rand_m2, color="k", ax=ax[1])
+        ax[1].title.set_text('Single OpO')
+        sns.violinplot(x='Epoch', y='Score', data=df_opo_m1, color="0.95", ax=ax[1])
+        sns.swarmplot(x='Epoch', y='Score', data=df_opo_m1, color="k", ax=ax[1])
         axs.append(ax[1])
 
-        ax[2].title.set_text('Single OpO')
-        sns.violinplot(x='Epoch', y='Score', data=df_opo_m1, color="0.95", ax=ax[2])
-        sns.swarmplot(x='Epoch', y='Score', data=df_opo_m1, color="k", ax=ax[2])
+        ax[2].title.set_text('Multiple Random')
+        sns.violinplot(x='Epoch', y='Score', data=df_rand_m2, color="0.95", ax=ax[2])
+        sns.swarmplot(x='Epoch', y='Score', data=df_rand_m2, color="k", ax=ax[2])
         axs.append(ax[2])
 
         ax[3].title.set_text('Multiple OpO')
