@@ -79,7 +79,7 @@ class VizSimFactory:
                 plt.plot(p[0], p[1], 'r-' if i == 0 else 'b-')
 
         plt.title(url.split('/')[-1].replace(".png", ''))
-        plt.suptitle(f'Score: {score}/{exp_score}')
+        plt.xlabel(f'Score: {score}/{exp_score}')
         plt.gca().set_aspect('equal')
         # plt.show()
         fig.savefig(f'debug/generate_accelerator_{berlin_now}.png' if url is None else url, bbox_inches="tight")
