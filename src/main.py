@@ -60,7 +60,7 @@ def run_from(ctx, scenario):
 
     # Running on Windows only
     if platform.system() == CONST.WINDOWS:
-        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=20)
+        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=25)
         print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
         print(f'Expected Score: {SimulationScore(simulation).get_expected_score(debug=False)}')
 

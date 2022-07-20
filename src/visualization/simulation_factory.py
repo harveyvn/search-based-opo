@@ -28,7 +28,7 @@ class VizSimFactory:
 
         # Render vehicles
         for i, vehicle in enumerate(self.sf.scenario.vehicles):
-            trajectory_points = vehicle.trajectory
+            trajectory_points = vehicle.movement.trajectory
             xs = [p[0] for p in trajectory_points]
             ys = [p[1] for p in trajectory_points]
             plt.plot(xs, ys, '.-', label=vehicle.name, color=colors[i][0])
@@ -45,5 +45,6 @@ class VizSimFactory:
             plt.plot([xs[-1]], [ys[-1]], 'X', color=colors[i][1])
 
         plt.title(f'AC3R generate_accelerator')
+        plt.gca().set_aspect('equal')
         plt.show()
         fig.savefig(f'debug/generate_accelerator_{berlin_now}.png', bbox_inches="tight")
