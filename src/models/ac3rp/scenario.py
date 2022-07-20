@@ -24,7 +24,7 @@ class CrashScenario:
         # if three points are given, that's an arc
 
         if ac3r_json_data is None:
-            weather = "sunny_noon"
+            weather = "sunny"
         else:
             weather = WEATHER_DICT[ac3r_json_data["environment"]["weather"]]
 
