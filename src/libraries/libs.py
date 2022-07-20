@@ -37,6 +37,8 @@ def _VD_A(treatment: List[float], control: List[float]):
 
 def cal_speed(p1, p2):
     time = abs(p2[2] - p1[2])
+    if time == 0:
+        return 0
 
     p1 = Point(p1[0], p1[1])
     p2 = Point(p2[0], p2[1])
