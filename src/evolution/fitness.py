@@ -7,7 +7,7 @@ from src.visualization import VizSimFactory
 
 
 def _write_log_file(simulation: Simulation, simulation_score: SimulationScore, fn,
-                    scenario: CrashScenario, ex_mes=None):
+                    scenario: CrashScenario, ex_mes=None, score=0, exp_score=0):
     toCSV = []
     s = dict.fromkeys(["speeds", "initial_position", "vehicles_dam", "sim_dam",
                        "crashed_happened", "sim_score", "expected_score", "exception",
@@ -45,7 +45,7 @@ def _write_log_file(simulation: Simulation, simulation_score: SimulationScore, f
     log_bbox_file = fn
     log_bbox_file = log_bbox_file.replace("log", "bbox").replace(".csv", f'_{epoch}.png')
     viz = VizSimFactory(simulation.sim_factory)
-    viz.plot_vehicle_road_bbox(url=log_bbox_file)
+    viz.plot_vehicle_road_bbox(url=log_bbox_file, score=score, exp_score=exp_score)
 
     bbox_data = {}
     for p in simulation.players:
@@ -75,7 +75,9 @@ class Fitness:
             _write_log_file(fn=log_data_file,
                             simulation=simulation,
                             simulation_score=simulation_score,
-                            scenario=individual)
+                            scenario=individual,
+                            score=scores[0],
+                            exp_score=simulation_score.get_expected_score())
         individual.scores = scores
         print(f'Scores: {scores}')
         return numpy.mean(scores),
