@@ -5,10 +5,10 @@ from typing import List
 
 WEATHER_DICT = {
     "cloud rain": "rainy",
-    "clear": "sunny_noon",
+    "clear": "sunny",
     "rain": "rainy",
     "cloud": "cloudy_evening",
-    "normal": "sunny_noon",
+    "normal": "sunny",
 }
 
 
