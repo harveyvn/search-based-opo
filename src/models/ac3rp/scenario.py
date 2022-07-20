@@ -7,7 +7,7 @@ WEATHER_DICT = {
     "cloud rain": "rainy",
     "clear": "sunny",
     "rain": "rainy",
-    "cloud": "cloudy_evening",
+    "cloud": "cloudy",
     "normal": "sunny",
 }
 
