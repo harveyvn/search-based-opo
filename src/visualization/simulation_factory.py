@@ -52,7 +52,8 @@ class VizSimFactory:
     def plot_vehicle_road_bbox(self, url: str = None, score=0, exp_score=0):
         berlin_now = datetime.now(pytz.timezone('Europe/Berlin')).strftime("%Y%m%d_%I%M%S")
         dist_x, dist_y = 0, 0
-        fig = plt.gcf()
+        fig = plt.figure()
+        plt.clf()
         colors = [["#FC6565", "#FF0000"], ["#82ABF5", "#0000FF"]]
 
         # Render roads
