@@ -24,6 +24,7 @@ class Vehicle:
             delta = road.road_line_equation
             if common.is_inside_polygon(p0, road.road_poly):
                 road_data = {
+                    "road": road,
                     "road_poly": road.road_poly,
                     "road_equation": road.road_line_equation,
                     "mutate_equation": common.cal_equation_line_one_point_and_line(p0, delta)

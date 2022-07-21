@@ -331,7 +331,7 @@ def translate_ls_to_new_origin(lst: LineString, new_origin: Point):
 
 
 def mutate_initial_point(lst: LineString,
-                         delta: Tuple,
+                         delta: Tuple = None,
                          distance: int = None,
                          minR: int = None, maxR: int = None,
                          num_points: int = 1,
