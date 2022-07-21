@@ -82,7 +82,8 @@ class MutateInitialPointClass(Mutator):
                 random_idx = np.random.choice(list(range(0, len(filtered_points))))
                 mutated_point = filtered_points[random_idx]
 
-                self.visualization(vehicle, points, (mutated_point.x, mutated_point.y))
+                # Debug
+                # self.visualization(vehicle, points, (mutated_point.x, mutated_point.y))
 
             count_iteration += 1
             if count_iteration % threshold_reset_distance == 0:
