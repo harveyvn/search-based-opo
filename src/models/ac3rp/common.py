@@ -186,27 +186,34 @@ def interpolate(road_nodes, sampling_unit=interpolation_distance):
     else:
         # Otherwise, use cubic splines
         k = 3
+    try:
+        pos_tck, pos_u = splprep([old_x_vals, old_y_vals], s=smoothness, k=k)
+        step_size = 1 / num_nodes
+        unew = arange(0, 1 + step_size, step_size)
+        new_x_vals, new_y_vals = splev(unew, pos_tck)
+        new_z_vals = repeat(0.0, len(unew))
 
-    pos_tck, pos_u = splprep([old_x_vals, old_y_vals], s=smoothness, k=k)
-    step_size = 1 / num_nodes
-    unew = arange(0, 1 + step_size, step_size)
-    new_x_vals, new_y_vals = splev(unew, pos_tck)
-    new_z_vals = repeat(0.0, len(unew))
+        if len(road_nodes[0]) > 2:
+            # Recompute width
+            old_width_vals = [t[3] for t in road_nodes]
+            width_tck, width_u = splprep([pos_u, old_width_vals], s=smoothness, k=k)
+            _, new_width_vals = splev(unew, width_tck)
 
-    if len(road_nodes[0]) > 2:
-        # Recompute width
-        old_width_vals = [t[3] for t in road_nodes]
-        width_tck, width_u = splprep([pos_u, old_width_vals], s=smoothness, k=k)
-        _, new_width_vals = splev(unew, width_tck)
-
-        # Return the 4-tuple with default z and default road width
-        return list(zip([round(v, rounding_precision) for v in new_x_vals],
-                        [round(v, rounding_precision) for v in new_y_vals],
-                        [round(v, rounding_precision) for v in new_z_vals],
-                        [round(v, rounding_precision) for v in new_width_vals]))
-    else:
-        return list(zip([round(v, rounding_precision) for v in new_x_vals],
-                        [round(v, rounding_precision) for v in new_y_vals]))
+            # Return the 4-tuple with default z and default road width
+            return list(zip([round(v, rounding_precision) for v in new_x_vals],
+                            [round(v, rounding_precision) for v in new_y_vals],
+                            [round(v, rounding_precision) for v in new_z_vals],
+                            [round(v, rounding_precision) for v in new_width_vals]))
+        else:
+            return list(zip([round(v, rounding_precision) for v in new_x_vals],
+                            [round(v, rounding_precision) for v in new_y_vals]))
+    except Exception as e:
+        old_z_vals = [t[2] for t in road_nodes]
+        old_w_vals = [t[3] for t in road_nodes]
+        return list(zip([round(v, rounding_precision) for v in old_x_vals],
+                        [round(v, rounding_precision) for v in old_y_vals],
+                        [round(v, rounding_precision) for v in old_z_vals],
+                        [round(v, rounding_precision) for v in old_w_vals]))
 
 
 def is_parallel(line1: List, line2: List):
