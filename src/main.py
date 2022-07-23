@@ -134,12 +134,21 @@ if __name__ == '__main__':
     # exit()
     scenarios = [
         # {"name": "148154", "path": "ciren/148154/data.json"},
-        {"name": "129224", "path": "ciren/129224/data.json"},
+        # {"name": "129224", "path": "ciren/129224/data.json"},
+        # {"name": "99817", "path": "ciren/99817/data.json"},
+        # {"name": "117021", "path": "ciren/117021/data.json"},
+        {"name": "117021", "path": "ciren/171831/data.json"},
+        {"name": "100271", "path": "ciren/100271/data.json"},
+        {"name": "103378", "path": "ciren/103378/data.json"},
+        {"name": "105203", "path": "ciren/105203/data.json"},
+        {"name": "105222", "path": "ciren/105222/data.json"},
+        {"name": "108812", "path": "ciren/108812/data.json"},
     ]
 
     execute_searching_from(scenarios)
 
-    # soo = ExperimentVisualizer("ciren/148154/data.json", [1.5, 2], [1.5, 2])
+    # soo = ExperimentVisualizer("ciren/148154/data.json", [1.55, 1.85], [1.5, 1.95])
+    # soo = ExperimentVisualizer("ciren/129224/data.json", [1.35, 1.75], [1.2, 1.9])
     # soo.visualize()
     # soo.visualize_box_plot()
 
