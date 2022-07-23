@@ -29,7 +29,7 @@ class RoadProfiler:
                 'x': x,
                 'y': y,
                 'z': 0,
-                't': t + delay
+                't': t + int(delay)
             }
             self.script.append(node)
             self.points.append([node['x'], node['y'], node['z']])

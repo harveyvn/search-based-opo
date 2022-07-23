@@ -13,7 +13,8 @@ IS_DEV = True if beamngpy.__version__ == "1.23" else False
 
 
 class Simulation:
-    def __init__(self, name, sim_factory: SimulationFactory, need_teleport: bool = False, debug: bool = False):
+    def __init__(self, sim_factory: SimulationFactory, name: str = "simulation",
+                 need_teleport: bool = False, debug: bool = False):
         self.sim_factory = sim_factory
         self.name = name
         self.roads: List[beamngpy.Road] = sim_factory.generate_roads()
@@ -23,6 +24,7 @@ class Simulation:
         self.debug: bool = debug
         self.center_point = sim_factory.get_center_scenario()
         self.need_teleport = sim_factory.generate_accelerator(debug=debug) if need_teleport and IS_DEV else False
+        self.weather = sim_factory.weather
 
     @staticmethod
     def init_simulation() -> BeamNGpy:

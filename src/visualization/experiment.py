@@ -38,7 +38,7 @@ class ExperimentVisualizer:
         df = pd.DataFrame()
         dfs = []
         for i in np.arange(start=1, stop=11, step=1):
-            df_tmp = self.process_individual(f'data/{self.case}/{mutator}_{algorithm}_{i}.csv', f'score_{i}')
+            df_tmp = self.process_individual(f'outputs/{self.case}/{mutator}_{algorithm}_{i}.csv', f'score_{i}')
             dfs.append(df_tmp)
         df = pd.concat(dfs, axis=1)
         df[algorithm] = df.mean(numeric_only=True, axis=1)
@@ -152,7 +152,7 @@ class ExperimentVisualizer:
             ax.set_ylim(self.ylim)
 
         plt.show()
-        fig.savefig(f'data/{self.case}/Plot - Multiple.png', bbox_inches="tight")
+        fig.savefig(f'outputs/{self.case}/Plot - Multiple.png', bbox_inches="tight")
 
     def visualize_box_plot(self):
         df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
@@ -170,14 +170,14 @@ class ExperimentVisualizer:
         sns.swarmplot(x='Epoch', y='Score', data=df_rand_m1, color="k", ax=ax[0])
         axs.append(ax[0])
 
-        ax[1].title.set_text('Multiple Random')
-        sns.violinplot(x='Epoch', y='Score', data=df_rand_m2, color="0.95", ax=ax[1])
-        sns.swarmplot(x='Epoch', y='Score', data=df_rand_m2, color="k", ax=ax[1])
+        ax[1].title.set_text('Single OpO')
+        sns.violinplot(x='Epoch', y='Score', data=df_opo_m1, color="0.95", ax=ax[1])
+        sns.swarmplot(x='Epoch', y='Score', data=df_opo_m1, color="k", ax=ax[1])
         axs.append(ax[1])
 
-        ax[2].title.set_text('Single OpO')
-        sns.violinplot(x='Epoch', y='Score', data=df_opo_m1, color="0.95", ax=ax[2])
-        sns.swarmplot(x='Epoch', y='Score', data=df_opo_m1, color="k", ax=ax[2])
+        ax[2].title.set_text('Multiple Random')
+        sns.violinplot(x='Epoch', y='Score', data=df_rand_m2, color="0.95", ax=ax[2])
+        sns.swarmplot(x='Epoch', y='Score', data=df_rand_m2, color="k", ax=ax[2])
         axs.append(ax[2])
 
         ax[3].title.set_text('Multiple OpO')
@@ -191,4 +191,4 @@ class ExperimentVisualizer:
             ax.yaxis.label.set_visible(False)
 
         plt.show()
-        fig.savefig(f'data/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")
+        fig.savefig(f'outputs/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")

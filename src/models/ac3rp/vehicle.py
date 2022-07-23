@@ -24,6 +24,7 @@ class Vehicle:
             delta = road.road_line_equation
             if common.is_inside_polygon(p0, road.road_poly):
                 road_data = {
+                    "road": road,
                     "road_poly": road.road_poly,
                     "road_equation": road.road_line_equation,
                     "mutate_equation": common.cal_equation_line_one_point_and_line(p0, delta)
@@ -56,9 +57,9 @@ class Vehicle:
         self.color = color
         self.road_data = road_data
         self.distance_to_trigger = distance_to_trigger
-        self.trajectory = trajectory
         self.speed = speed
         self.delay = delay
+        self.movement = Movement(trajectory)
 
     # def generate_trajectory(self):
     #     # First generate the trajectory, then rotate it according to NORTH

@@ -320,10 +320,10 @@ def translate_ls_to_new_origin(lst: LineString, new_origin: Point):
         # two values are approximately equal or “close” to each other, 3 digits after comma
         print(f'Exception: Generated new line is not the same length! lst: '
               f'{lst.length} vs new_lst {LineString(new_lst).length}')
-    if not is_parallel(lst.coords, new_lst):
+    if not is_parallel(list(lst.coords), new_lst):
         print(f'Exception: Generated new line is not parallel to the old line!')
         print(f'Old line: ')
-        print(lst.coords)
+        print(list(lst.coords))
         print(f'New line: ')
         print(new_lst)
         print("====")
@@ -331,7 +331,7 @@ def translate_ls_to_new_origin(lst: LineString, new_origin: Point):
 
 
 def mutate_initial_point(lst: LineString,
-                         delta: Tuple,
+                         delta: Tuple = None,
                          distance: int = None,
                          minR: int = None, maxR: int = None,
                          num_points: int = 1,

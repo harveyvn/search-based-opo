@@ -6,7 +6,10 @@ from src.models import SimulationFactory, Simulation, SimulationScore, Simulatio
 from src.models.ac3rp import CrashScenario
 from src.models.constant import CONST
 from experiment import Experiment
-from visualization import Scenario as VehicleTrajectoryVisualizer
+from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 @click.group()
@@ -47,18 +50,19 @@ def run_from(ctx, scenario):
     ctx.ensure_object(dict)
 
     """Take a JSON scenario file and run the entire search algorithm."""
-    # TODO: Can we read some configurations (like fitness function, mutation operators, speed min/max,
-    #  and other parameters), so we can add it from there?
     with open(scenario) as file:
-        scenario_data = json.load(file)
-    sim_factory = SimulationFactory(CrashScenario.from_json(scenario_data))
-    simulation = Simulation(sim_factory=sim_factory, name="test00", need_teleport=True, debug=True)
+        crisce_data = json.load(file)
+    with open(scenario.replace("data", "text")) as file:
+        ac3r_data = json.load(file)
+
+    sim_factory = SimulationFactory(CrashScenario.from_json(crisce_data, ac3r_data))
+    simulation = Simulation(sim_factory=sim_factory, name=scenario.split('\\')[1], need_teleport=True, debug=False)
 
     # Running on Windows only
     if platform.system() == CONST.WINDOWS:
-        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=20)
+        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=25)
         print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
-        print(f'{SimulationScore(simulation).get_expected_score(debug=False)}')
+        print(f'Expected Score: {SimulationScore(simulation).get_expected_score(debug=False)}')
 
 
 @cli.command()
@@ -126,10 +130,25 @@ def execute_searching_from(scenario_files):
 
 # make sure we invoke cli
 if __name__ == '__main__':
-    cli()
-    exit()
+    # cli()
+    # exit()
     scenarios = [
-        {"name": "129224", "path": "ciren/129224/data.json"},
+        # {"name": "148154", "path": "ciren/148154/data.json"},
+        # {"name": "129224", "path": "ciren/129224/data.json"},
+        # {"name": "99817", "path": "ciren/99817/data.json"},
+        # {"name": "117021", "path": "ciren/117021/data.json"},
+        {"name": "117021", "path": "ciren/171831/data.json"},
+        {"name": "100271", "path": "ciren/100271/data.json"},
+        {"name": "103378", "path": "ciren/103378/data.json"},
+        {"name": "105203", "path": "ciren/105203/data.json"},
+        {"name": "105222", "path": "ciren/105222/data.json"},
+        {"name": "108812", "path": "ciren/108812/data.json"},
     ]
 
     execute_searching_from(scenarios)
+
+    # soo = ExperimentVisualizer("ciren/148154/data.json", [1.55, 1.85], [1.5, 1.95])
+    # soo = ExperimentVisualizer("ciren/129224/data.json", [1.35, 1.75], [1.2, 1.9])
+    # soo.visualize()
+    # soo.visualize_box_plot()
+

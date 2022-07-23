@@ -12,6 +12,7 @@ class SimulationFactory:
         self.scenario: CrashScenario = scenario
         self.roads: List[beamngpy.Road] = []
         self.players: List[Player] = []
+        self.weather = scenario.weather
 
     def set_scenario(self, scenario: CrashScenario):
         self.scenario = scenario
@@ -60,7 +61,7 @@ class SimulationFactory:
 
     def generate_players(self) -> List[Player]:
         for vehicle in self.scenario.vehicles:
-            trajectory = vehicle.trajectory
+            trajectory = vehicle.movement.trajectory
             initial_position = (trajectory[0][0], trajectory[0][1], 0)
             # Create BeamNG Vehicle for simulation
             sim_vehicle = beamngpy.Vehicle(str(vehicle.name),
@@ -95,7 +96,8 @@ class SimulationFactory:
         retry, eps, valid = 1, 0, False
         orig = self.get_center_scenario()
         while not valid:
-            print(f'Try {retry} time(s) with eps is {eps}!')
+            if debug:
+                print(f'Try {retry} time(s) with eps is {eps}!')
             for i, player in enumerate(self.players):
                 player.accelerator = Accelerator(side=i, eps=eps, speed=player.speed, rotation=player.rot, orig=orig)
                 player.accelerator.setup()
@@ -107,19 +109,21 @@ class SimulationFactory:
             # Is it valid?
             if distance_between_last_points > 50 and not crossed:
                 valid = True
-                print("========================")
-                print(f'Generate accelerator successfully. Chosen eps is {eps}!')
-                print(f'Simulation can run with an initial accelerator!')
-                print(f'Teleport is enabled!')
-                print("========================")
+                if debug:
+                    print("========================")
+                    print(f'Generate accelerator successfully. Chosen eps is {eps}!')
+                    print(f'Simulation can run with an initial accelerator!')
+                    print(f'Teleport is enabled!')
+                    print("========================")
 
             # Time to make decision?
             if retry == 50:  # Try 50 times
-                print("========================")
-                print(f'Failed to generate accelerator. Current eps is {eps}!')
-                print(f'Simulation will run without an initial accelerator!')
-                print(f'Teleport is disabled from now!')
-                print("========================")
+                if debug:
+                    print("========================")
+                    print(f'Failed to generate accelerator. Current eps is {eps}!')
+                    print(f'Simulation will run without an initial accelerator!')
+                    print(f'Teleport is disabled from now!')
+                    print("========================")
                 return False
 
             # Adjust the configuration

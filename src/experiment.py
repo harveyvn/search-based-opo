@@ -25,9 +25,11 @@ class Experiment:
             self.simulation_name = tmp_simulation_name if simulation_name is None else simulation_name
             with open(file_path) as file:
                 self.scenario = json.load(file)
+            with open(file_path.replace("data", "text")) as file:
+                self.ac3r_data = json.load(file)
 
-            sim_factory = SimulationFactory(CrashScenario.from_json(self.scenario))
-            simulation = Simulation(sim_factory=sim_factory)
+            sim_factory = SimulationFactory(CrashScenario.from_json(self.scenario, self.ac3r_data))
+            simulation = Simulation(sim_factory=sim_factory, name=self.case_name, need_teleport=True)
             self.threshold = SimulationScore(simulation).get_expected_score()
         except Exception as ex:
             print(f'Scenario is not found. Exception: {ex}!')
@@ -46,13 +48,15 @@ class Experiment:
     def _run_rev(self):
         # Write data file
         pathlib.Path(f'outputs/{self.case_name}/').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(f'outputs/{self.case_name}/log').mkdir(parents=True, exist_ok=True)
+        pathlib.Path(f'outputs/{self.case_name}/bbox').mkdir(parents=True, exist_ok=True)
         rev_logfile = open(f'outputs/{self.case_name}/{self.simulation_name}.csv', "a")
         rev_logfile.write("v1,v2,score\n")
         rev_log_data_file = f'outputs/{self.case_name}/log/{self.simulation_name}.csv'
 
         # Experiment run
         rev = RandomEvolution(
-            scenario=CrashScenario.from_json(self.scenario),
+            scenario=CrashScenario.from_json(self.scenario, self.ac3r_data),
             fitness=Fitness.evaluate,
             # fitness_repetitions=5,
             generate=Generator.generate_random_from,
@@ -77,7 +81,7 @@ class Experiment:
 
         # Experiment run
         oev = OpoEvolution(
-            scenario=CrashScenario.from_json(self.scenario),
+            scenario=CrashScenario.from_json(self.scenario, self.ac3r_data),
             fitness=Fitness.evaluate,
             # fitness_repetitions=5,
             generate=Generator.generate_random_from,

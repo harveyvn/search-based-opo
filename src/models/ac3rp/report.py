@@ -18,8 +18,7 @@ class Report:
             part_name = part["name"]
             if len(part_name.split()) < 3:
                 parts.append({
-                    "name": "".join(PART_DICT[p] for p in part_name.split()),
-                    "damage": part["damage"]
+                    "name": "".join(PART_DICT[p] for p in part_name.split())
                 })
             else:
                 words = part_name.split()
@@ -29,17 +28,14 @@ class Report:
                         k.append(i)
                 if len(k) == 2:  # (side left left)
                     parts.append({
-                        "name": "".join(PART_DICT[p] for p in k),
-                        "damage": part["damage"]
+                        "name": "".join(PART_DICT[p] for p in k)
                     })
                 else:  # (front left right) or (side left right)
                     parts.append({
-                        "name": "".join(PART_DICT[p] for p in [k[0], k[1]]),  # (front left) or (side left)
-                        "damage": part["damage"]
+                        "name": "".join(PART_DICT[p] for p in [k[0], k[1]])  # (front left) or (side left)
                     })
                     parts.append({
-                        "name": "".join(PART_DICT[p] for p in [k[0], k[2]]),  # (front right) or (side right)
-                        "damage": part["damage"]
+                        "name": "".join(PART_DICT[p] for p in [k[0], k[2]])  # (front right) or (side right)
                     })
         return Report(report_dict["name"], parts)
 

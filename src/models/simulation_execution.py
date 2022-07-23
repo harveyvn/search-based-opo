@@ -36,14 +36,12 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for player in self.simulation.players:
-            print(f'Target speed of {player.vehicle.vid}: {player.speed}')
             if self.simulation.need_teleport:
                 scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
                                      rot=player.rot, rot_quat=player.rot_quat)
             else:
                 scenario.add_vehicle(player.vehicle, pos=player.pos,
                                      rot=player.rot, rot_quat=player.rot_quat)
-        print("=========")
         # BeamNG scenario init
         bng_instance.open(launch=True)
         scenario.make(bng_instance)
@@ -68,6 +66,7 @@ class SimulationExec:
         try:
             bng_instance.load_scenario(scenario)
             bng_instance.start_scenario()
+            bng_instance.set_weather_preset(self.simulation.weather)
 
             # Enable bird view
             if self.is_birdview:
@@ -148,6 +147,28 @@ class SimulationExec:
                 # Trigger teleport when both cars are ready
                 if all(car is True for car in is_valid_to_teleport) and not is_teleported:
                     is_teleported = self.simulation.teleport(bng_instance, self.simulation.players)
+
+                # Collect bbox coordinates
+                if is_teleported:
+                    for i, player in enumerate(self.simulation.players):
+                        bbox = player.vehicle.get_bbox()
+                        boundary_x = [
+                            bbox['front_bottom_left'][0],
+                            bbox['front_bottom_right'][0],
+                            bbox['rear_bottom_right'][0],
+                            bbox['rear_bottom_left'][0],
+                            bbox['front_bottom_left'][0],
+                        ]
+                        boundary_y = [
+                            bbox['front_bottom_left'][1],
+                            bbox['front_bottom_right'][1],
+                            bbox['rear_bottom_right'][1],
+                            bbox['rear_bottom_left'][1],
+                            bbox['front_bottom_left'][1],
+                        ]
+                        player.bbox.append((boundary_x, boundary_y))
+
+            # ======== END WHILE =========
 
             sim_data_collectors.end(success=True)
             if not is_crash:

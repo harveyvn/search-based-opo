@@ -37,7 +37,8 @@ VEHICLE_PARTS_DICT = {
     "Front Sway Bar": 'F',
     "Stock Intake": 'F',
     "Stock Engine Mounts": 'F',
-    "Rear Driveshaft": 'M'
+    "Rear Driveshaft": 'M',
+    "Stock Oil Pan": 'F',
 }
 
 # TODO: find a position of this component

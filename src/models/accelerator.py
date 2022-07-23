@@ -31,7 +31,7 @@ class Accelerator:
         trajectory = list()
         color = [1.0, 0.0, 0.0, 1]
 
-        for i in range(200):
+        for i in range(400):
             trajectory.append([
                 orig[0] + i * np.around(np.sin(math.radians(self.rotation)), decimals=5),
                 orig[1] + i * np.around(np.cos(math.radians(self.rotation)), decimals=5),

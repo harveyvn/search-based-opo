@@ -34,6 +34,7 @@ class Player:
         self.times = []
         self.speed = speed
         self.accelerator = None
+        self.bbox = []
 
     def collect_positions_only(self, position):
         self.positions.append(position)
