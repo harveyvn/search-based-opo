@@ -80,8 +80,7 @@ class SimulationScore:
                 for player in self.simulation.players:
                     print(player.vehicle.vid)
                     print(player.positions)
-            if self.distance_between_two_players(self.simulation.players) < 0:
-                return -1
+            self.simulation_score = self.distance_between_two_players(self.simulation.players)
         else:
             try:
                 self.simulation_score = self._compute(self.simulation.targets, self.simulation.get_data_outputs(),

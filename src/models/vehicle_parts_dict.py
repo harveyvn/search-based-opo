@@ -39,6 +39,17 @@ VEHICLE_PARTS_DICT = {
     "Stock Engine Mounts": 'F',
     "Rear Driveshaft": 'M',
     "Stock Oil Pan": 'F',
+    "RWD Transfer Case": 'F',
+    "3.0L I6 Engine": 'F',
+    "Windshield": 'F',
+    "Front Struts": 'F',
+    "Rear Halfshafts": 'F',
+    "Left Quarter Glass": 'BL',
+    "Gasoline Fuel Tank": 'B',
+    "Rear Sway Bar": 'B',
+    "Right Quarter Glass": 'BR',
+    "Electronically Locking Rear Differential": 'B',
+    "Rear Shocks": 'B',
 }
 
 # TODO: find a position of this component
