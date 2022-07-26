@@ -25,8 +25,11 @@ class Experiment:
             self.simulation_name = tmp_simulation_name if simulation_name is None else simulation_name
             with open(file_path) as file:
                 self.scenario = json.load(file)
-            with open(file_path.replace("data", "text")) as file:
-                self.ac3r_data = json.load(file)
+            try:
+                with open(file_path.replace("data", "text")) as file:
+                    self.ac3r_data = json.load(file)
+            except Exception as e:
+                self.ac3r_data = None
 
             sim_factory = SimulationFactory(CrashScenario.from_json(self.scenario, self.ac3r_data))
             simulation = Simulation(sim_factory=sim_factory, name=self.case_name, need_teleport=True)
