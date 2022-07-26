@@ -27,11 +27,12 @@ class Accelerator:
     def setup(self, is_debug: bool = False):
         # Using an initial rotation of the car
         # Generate a trajectory
+        num_points = 400 if self.speed > 0 else 2
         orig = self.orig
         trajectory = list()
         color = [1.0, 0.0, 0.0, 1]
 
-        for i in range(400):
+        for i in range(num_points):
             trajectory.append([
                 orig[0] + i * np.around(np.sin(math.radians(self.rotation)), decimals=5),
                 orig[1] + i * np.around(np.cos(math.radians(self.rotation)), decimals=5),

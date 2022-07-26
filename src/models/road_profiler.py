@@ -21,7 +21,7 @@ class RoadProfiler:
             if length == 0:
                 continue
             speed = p1[2]
-            time = length / speed
+            time = length / speed if speed > 0 else 0
             segment_times.append(time + segment_times[-1])
 
         for x, y, t in zip(segment_x, segment_y, segment_times):

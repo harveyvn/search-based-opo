@@ -52,8 +52,13 @@ def run_from(ctx, scenario):
     """Take a JSON scenario file and run the entire search algorithm."""
     with open(scenario) as file:
         crisce_data = json.load(file)
-    with open(scenario.replace("data", "text")) as file:
-        ac3r_data = json.load(file)
+
+    try:
+        with open(scenario.replace("data", "text")) as file:
+            ac3r_data = json.load(file)
+    except Exception as e:
+        print("Text file not found!")
+        ac3r_data = None
 
     sim_factory = SimulationFactory(CrashScenario.from_json(crisce_data, ac3r_data))
     simulation = Simulation(sim_factory=sim_factory, name=scenario.split('\\')[1], need_teleport=True, debug=False)
@@ -140,9 +145,14 @@ if __name__ == '__main__':
         # {"name": "171831", "path": "ciren/171831/data.json"},
         # {"name": "100271", "path": "ciren/100271/data.json"},
         # {"name": "103378", "path": "ciren/103378/data.json"},
-        {"name": "105203", "path": "ciren/105203/data.json"},
-        {"name": "105222", "path": "ciren/105222/data.json"},
-        {"name": "108812", "path": "ciren/108812/data.json"},
+        # {"name": "105203", "path": "ciren/105203/data.json"},
+        # {"name": "105222", "path": "ciren/105222/data.json"},
+        # {"name": "108812", "path": "ciren/108812/data.json"},
+        {"name": "119489", "path": "ciren/119489/data.json"},
+        {"name": "119839", "path": "ciren/119839/data.json"},
+        {"name": "120013", "path": "ciren/120013/data.json"},
+        {"name": "120305", "path": "ciren/120305/data.json"},
+        {"name": "121520", "path": "ciren/121520/data.json"},
     ]
 
     execute_searching_from(scenarios)

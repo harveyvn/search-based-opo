@@ -264,6 +264,8 @@ def intersect(list_lst: List[LineString], get_distance: bool = False):
     point: Point = first.intersection(last)
     if point.is_empty:
         return []
+    if isinstance(point, shapely.geometry.LineString):
+        return [0, 0]
     return [point.x, point.y]
 
 

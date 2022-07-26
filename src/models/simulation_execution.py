@@ -18,7 +18,7 @@ class SimulationExec:
 
     def execute(self, timeout: int = 60):
         is_teleported = False
-        is_valid_to_teleport = [False, False]
+        is_valid_to_teleport = []
         speed_dict_by_vid = {0: [], 1: []}
         start_time = 0
         is_crash = False
@@ -36,9 +36,10 @@ class SimulationExec:
 
         # Import vehicles from scenario obj to beamNG instance
         for player in self.simulation.players:
-            if self.simulation.need_teleport:
+            if self.simulation.need_teleport and player.speed > 0:
                 scenario.add_vehicle(player.vehicle, pos=player.accelerator.orig,
                                      rot=player.rot, rot_quat=player.rot_quat)
+                is_valid_to_teleport.append(False)
             else:
                 scenario.add_vehicle(player.vehicle, pos=player.pos,
                                      rot=player.rot, rot_quat=player.rot_quat)
@@ -142,7 +143,10 @@ class SimulationExec:
                             min_speed = player.speed
                             max_speed = player.speed + 0.5
                             if min_speed < avg_speed < max_speed:
-                                is_valid_to_teleport[i] = True
+                                try:
+                                    is_valid_to_teleport[i] = True
+                                except Exception as e:
+                                    print("Out of vehicle list due to stopping vehicle!")
 
                 # Trigger teleport when both cars are ready
                 if all(car is True for car in is_valid_to_teleport) and not is_teleported:

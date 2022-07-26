@@ -171,9 +171,10 @@ class Simulation:
                     }
                 )
 
-            cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{target_pos})'
-            beamng.queue_lua_command(cmd)
-            vehicle.ai_set_mode("manual")
-            vehicle.ai_set_script(script=n_script, cling=False)
-            self.render_debug_line(beamng, road_pf)
+            if player.speed > 0:
+                cmd = f'scenetree.findObject(\'{vehicle.vid}\'):setPositionNoPhysicsReset(vec3{target_pos})'
+                beamng.queue_lua_command(cmd)
+                vehicle.ai_set_mode("manual")
+                vehicle.ai_set_script(script=n_script, cling=False)
+                self.render_debug_line(beamng, road_pf)
         return True
