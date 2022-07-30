@@ -135,8 +135,8 @@ def execute_searching_from(scenario_files):
 
 # make sure we invoke cli
 if __name__ == '__main__':
-    cli()
-    exit()
+    # cli()
+    # exit()
     scenarios = [
         # {"name": "148154", "path": "ciren/148154/data.json"},
         # {"name": "129224", "path": "ciren/129224/data.json"},
