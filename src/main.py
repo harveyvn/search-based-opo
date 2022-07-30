@@ -65,7 +65,7 @@ def run_from(ctx, scenario):
 
     # Running on Windows only
     if platform.system() == CONST.WINDOWS:
-        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=25)
+        SimulationExec(simulation=simulation, is_birdview=False).execute(timeout=20)
         print(f'Simulation Score: {SimulationScore(simulation).calculate(debug=True)}')
         print(f'Expected Score: {SimulationScore(simulation).get_expected_score(debug=False)}')
 
@@ -135,8 +135,8 @@ def execute_searching_from(scenario_files):
 
 # make sure we invoke cli
 if __name__ == '__main__':
-    # cli()
-    # exit()
+    cli()
+    exit()
     scenarios = [
         # {"name": "148154", "path": "ciren/148154/data.json"},
         # {"name": "129224", "path": "ciren/129224/data.json"},
@@ -148,11 +148,16 @@ if __name__ == '__main__':
         # {"name": "105203", "path": "ciren/105203/data.json"},
         # {"name": "105222", "path": "ciren/105222/data.json"},
         # {"name": "108812", "path": "ciren/108812/data.json"},
-        {"name": "119489", "path": "ciren/119489/data.json"},
         {"name": "119839", "path": "ciren/119839/data.json"},
+        {"name": "119489", "path": "ciren/119489/data.json"},
         {"name": "120013", "path": "ciren/120013/data.json"},
         {"name": "120305", "path": "ciren/120305/data.json"},
         {"name": "121520", "path": "ciren/121520/data.json"},
+        {"name": "122080", "path": "ciren/122080/data.json"},
+        {"name": "128066", "path": "ciren/128066/data.json"},
+        {"name": "128697", "path": "ciren/128697/data.json"},
+        {"name": "137748", "path": "ciren/137748/data.json"},
+        {"name": "148154", "path": "ciren/148154/data.json"},
     ]
 
     execute_searching_from(scenarios)
