@@ -168,6 +168,12 @@ if __name__ == '__main__':
         # ["ciren/103378/data.json", [1.6, 1.85], [1.45, 1.95]],
         # ["ciren/105203/data.json", [-0.75, 1.85], [-2.5, 2.75]],
         # ["ciren/105222/data.json", [1.75, 1.81], [1.6, 1.9]],
+        # ["ciren/108812/data.json", [-1.25, 1.95], [-3, 3.25]],
+        # ["ciren/117021/data.json", [1.65, 1.72], [1.55, 1.75]],
+        # ["ciren/119489/data.json", [-1.25, 1.95], [-3, 3.25]],
+        # ["ciren/119839/data.json", [1.6, 1.72], [1.5, 1.78]],
+        # ["ciren/120013/data.json", [1.74, 1.81], [1.6, 1.9]],
+        # ["ciren/120305/data.json", [1.575, 1.81], [1.45, 1.95]],
     ]
     # soo = ExperimentVisualizer("ciren/148154/data.json", [1.55, 1.85], [1.5, 1.95])
     # soo = ExperimentVisualizer("ciren/129224/data.json", [1.35, 1.75], [1.2, 1.9])
