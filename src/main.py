@@ -148,22 +148,32 @@ if __name__ == '__main__':
         # {"name": "105203", "path": "ciren/105203/data.json"},
         # {"name": "105222", "path": "ciren/105222/data.json"},
         # {"name": "108812", "path": "ciren/108812/data.json"},
-        {"name": "119839", "path": "ciren/119839/data.json"},
-        {"name": "119489", "path": "ciren/119489/data.json"},
-        {"name": "120013", "path": "ciren/120013/data.json"},
-        {"name": "120305", "path": "ciren/120305/data.json"},
-        {"name": "121520", "path": "ciren/121520/data.json"},
-        {"name": "122080", "path": "ciren/122080/data.json"},
-        {"name": "128066", "path": "ciren/128066/data.json"},
-        {"name": "128697", "path": "ciren/128697/data.json"},
-        {"name": "137748", "path": "ciren/137748/data.json"},
-        {"name": "148154", "path": "ciren/148154/data.json"},
+        # {"name": "119839", "path": "ciren/119839/data.json"},
+        # {"name": "119489", "path": "ciren/119489/data.json"},
+        # {"name": "120013", "path": "ciren/120013/data.json"},
+        # {"name": "120305", "path": "ciren/120305/data.json"},
+        # {"name": "121520", "path": "ciren/121520/data.json"},
+        # {"name": "122080", "path": "ciren/122080/data.json"},
+        # {"name": "128066", "path": "ciren/128066/data.json"},
+        # {"name": "128697", "path": "ciren/128697/data.json"},
+        # {"name": "137748", "path": "ciren/137748/data.json"},
+        # {"name": "148154", "path": "ciren/148154/data.json"},
     ]
 
     execute_searching_from(scenarios)
 
+    scenarios = [
+        # ["ciren/99817/data.json", [1.4, 1.75], [1.1, 1.95]],
+        # ["ciren/100271/data.json", [-1, 1.95], [-2.25, 3.25]],
+        # ["ciren/103378/data.json", [1.6, 1.85], [1.45, 1.95]],
+        # ["ciren/105203/data.json", [-0.75, 1.85], [-2.5, 2.75]],
+        # ["ciren/105222/data.json", [1.75, 1.81], [1.6, 1.9]],
+    ]
     # soo = ExperimentVisualizer("ciren/148154/data.json", [1.55, 1.85], [1.5, 1.95])
     # soo = ExperimentVisualizer("ciren/129224/data.json", [1.35, 1.75], [1.2, 1.9])
-    # soo.visualize()
-    # soo.visualize_box_plot()
+
+    for s in scenarios:
+        soo = ExperimentVisualizer(s[0], s[1], s[2])
+        soo.visualize()
+        soo.visualize_box_plot()
 

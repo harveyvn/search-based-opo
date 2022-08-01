@@ -32,6 +32,7 @@ class ExperimentVisualizer:
                 latest_score = val
 
         df[col_name].fillna(latest_score, inplace=True)
+        df[col_name] = df.apply(lambda r: r[col_name] if r[col_name] >= 0 else r[col_name]/1000, axis=1)
         return df
 
     def preprocess_df(self, algorithm, mutator):
