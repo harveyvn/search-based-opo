@@ -96,6 +96,8 @@ class Preprocessing:
 
         # auc_df = pd.concat([auc_df, mean_matrix])
         auc_df = auc_df.reset_index(drop=True)
+        auc_df.rename(columns={"auc_rand_m1": "S.Rand", "auc_opo_m1": "S.OpO",
+                               "auc_rand_m2": "M.Rand", "auc_opo_m2": "M.OpO"}, inplace=True)
         mean_matrix_dict = mean_matrix.to_dict(orient="records")[0]
         mean_matrix_dict = dict(sorted(mean_matrix_dict.items(), key=lambda item: item[1]))
         self.mean_matrix_dict = mean_matrix_dict

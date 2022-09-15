@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from .mutation import Mutation
 from .preprocessing import Preprocessing
 from .evol_line import EvolLine
 

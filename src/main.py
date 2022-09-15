@@ -6,7 +6,7 @@ from src.models import SimulationFactory, Simulation, SimulationScore, Simulatio
 from src.models.ac3rp import CrashScenario
 from src.models.constant import CONST
 from experiment import Experiment
-from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer, Preprocessing
+from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer, Preprocessing, Report
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -194,4 +194,6 @@ if __name__ == '__main__':
         soo = ExperimentVisualizer(preprocess=ppr, ylim=s[1], bp_ylim=s[2])
         soo.visualize()
         soo.visualize_box_plot()
+        report = Report(df=ppr.auc_df)
+        report.are_they_different()
 
