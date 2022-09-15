@@ -190,6 +190,7 @@ if __name__ == '__main__':
 
     for s in scenarios:
         ppr = Preprocessing(s[0])
+        ppr.compute_auc()
         soo = ExperimentVisualizer(preprocess=ppr, ylim=s[1], bp_ylim=s[2])
         soo.visualize()
         soo.visualize_box_plot()

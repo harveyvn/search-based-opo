@@ -4,6 +4,7 @@ import seaborn as sns
 import pandas as pd
 from .mutation import Mutation
 from .preprocessing import Preprocessing
+from .evol_line import EvolLine
 
 
 class ExperimentVisualizer:
@@ -33,58 +34,26 @@ class ExperimentVisualizer:
             return ax
 
         df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.preprocess.generate_dfs()
-        d_mutators = [
-            Mutation(xs=df_rand_m1["i"],
-                     ys=df_rand_m1["Random"],
-                     method="simp",
-                     color="steelblue",
-                     name="S.Rand",
-                     short_name="Single",
-                     family="Random",
-                     target_score=self.target,
-                     y_pred=df_rand_m1[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
-            Mutation(xs=df_rand_m2["i"],
-                     ys=df_rand_m2["Random"],
-                     method="simp",
-                     color="orange",
-                     name="M.Rand",
-                     short_name="Multiple",
-                     family="Random",
-                     target_score=self.target,
-                     y_pred=df_rand_m2[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
-            Mutation(xs=df_opo_m1["i"],
-                     ys=df_opo_m1["OpO"],
-                     method="simp",
-                     color="green",
-                     name="S.OpO",
-                     short_name="Single",
-                     family="OpO",
-                     target_score=self.target,
-                     y_pred=df_opo_m1[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
-            Mutation(xs=df_opo_m2["i"],
-                     ys=df_opo_m2["OpO"],
-                     method="simp",
-                     color="red",
-                     name="M.OpO",
-                     short_name="Multiple",
-                     family="OpO",
-                     target_score=self.target,
-                     y_pred=df_opo_m2[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
-        ]
+        mean_matrix_dict = self.preprocess.mean_matrix_dict
 
-        d_mutators = sorted(d_mutators, key=lambda x: x.mse, reverse=False)
+        d_mutators = [
+            EvolLine(xs=df_rand_m1["i"], ys=df_rand_m1["Random"], color="steelblue", name="S.Rand", short_name="Single", family="Random", metric="AUC", point=mean_matrix_dict["auc_rand_m1"]),
+            EvolLine(xs=df_rand_m2["i"], ys=df_rand_m2["Random"], color="orange", name="M.Rand", short_name="Multiple", family="Random", metric="AUC", point=mean_matrix_dict["auc_rand_m2"]),
+            EvolLine(xs=df_opo_m1["i"], ys=df_opo_m1["OpO"], color="green", name="S.OpO", short_name="Single", family="OpO", metric="AUC", point=mean_matrix_dict["auc_opo_m1"]),
+            EvolLine(xs=df_opo_m2["i"], ys=df_opo_m2["OpO"], color="red", name="M.OpO", short_name="Multiple", family="OpO", metric="AUC", point=mean_matrix_dict["auc_opo_m2"]),
+        ]
+        d_mutators = sorted(d_mutators, key=lambda x: x.point, reverse=True)
+
         fig, ax = plt.subplots(3, 3, figsize=(15, 15))
         axs = []
 
         ax[0, 0].title.set_text('Single Random')
-        ax[0, 0] = _confidence_interval(df_rand_m1["i"], df_rand_m1["Random"], df_rand_m1["std"], ax[0, 0],
-                                        color="steelblue")
+        ax[0, 0] = _confidence_interval(df_rand_m1["i"], df_rand_m1["Random"], df_rand_m1["std"], ax[0, 0], color="steelblue")
         ax[0, 0].plot(df_rand_m1["i"], [self.target for x in df_rand_m1["i"]], label="Single", color="#0d1487")
         axs.append(ax[0, 0])
 
         ax[0, 1].title.set_text('Multiple Random')
-        ax[0, 1] = _confidence_interval(df_rand_m2["i"], df_rand_m2["Random"], df_rand_m2["std"], ax[0, 1],
-                                        color="orange")
+        ax[0, 1] = _confidence_interval(df_rand_m2["i"], df_rand_m2["Random"], df_rand_m2["std"], ax[0, 1], color="orange")
         ax[0, 1].plot(df_rand_m1["i"], [self.target for x in df_rand_m1["i"]], label="Single", color="#0d1487")
         axs.append(ax[0, 1])
 

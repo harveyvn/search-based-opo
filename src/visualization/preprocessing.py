@@ -1,12 +1,15 @@
 import json
 import numpy as np
 import pandas as pd
+from numpy import trapz
 from src.models.ac3rp import CrashScenario
 from src.models import SimulationFactory, Simulation, SimulationScore
 
 
 class Preprocessing:
     def __init__(self, file_path):
+        self.auc_df = None
+        self.mean_matrix_dict = None
         self.df_rand_m1, self.df_opo_m1 = pd.DataFrame(), pd.DataFrame()
         self.df_rand_m2, self.df_opo_m2 = pd.DataFrame(), pd.DataFrame()
         self.df_rand_opo_m1, self.df_rand_opo_m2 = pd.DataFrame(), pd.DataFrame()
@@ -60,3 +63,40 @@ class Preprocessing:
         self.df_rand_opo_m2["Random"] = self.df_rand_m2["Random"]
         self.df_rand_opo_m2["OpO"] = self.df_opo_m2["OpO"]
         return self.df_rand_m1, self.df_opo_m1, self.df_rand_m2, self.df_opo_m2, self.df_rand_opo_m1, self.df_rand_opo_m2
+
+    def compute_auc(self):
+        df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
+        auc_df = pd.DataFrame(columns=["auc_rand_m1", "auc_opo_m1", "auc_rand_m2", "auc_opo_m2"])
+
+        for i in range(1, 11):
+            rand_m1 = df_rand_m1[f'repetition_{i}'].tolist()
+            opo_m1 = df_opo_m1[f'repetition_{i}'].tolist()
+            rand_m2 = df_rand_m2[f'repetition_{i}'].tolist()
+            opo_m2 = df_opo_m2[f'repetition_{i}'].tolist()
+            # Get min value across the df
+            min_val = abs(min(rand_m1 + opo_m1 + rand_m2 + opo_m2))
+            # Level up
+            rand_m1 = [x + min_val for x in rand_m1]
+            opo_m1 = [x + min_val for x in opo_m1]
+            rand_m2 = [x + min_val for x in rand_m2]
+            opo_m2 = [x + min_val for x in opo_m2]
+            # Calculate AUC for each repetition - append to the last row of auc_df
+            new_auc_row = {
+                "auc_rand_m1": trapz(rand_m1),
+                "auc_opo_m1": trapz(opo_m1),
+                "auc_rand_m2": trapz(rand_m2),
+                "auc_opo_m2": trapz(opo_m2)
+            }
+            auc_df = pd.concat([auc_df, pd.DataFrame([new_auc_row])])
+
+        # Combine all auc and get mean
+        dfs = list()
+        dfs.append(auc_df[["auc_rand_m1", "auc_opo_m1", "auc_rand_m2", "auc_opo_m2"]].mean(axis=0))
+        mean_matrix = pd.concat(dfs, axis=1).T
+
+        # auc_df = pd.concat([auc_df, mean_matrix])
+        auc_df = auc_df.reset_index(drop=True)
+        mean_matrix_dict = mean_matrix.to_dict(orient="records")[0]
+        mean_matrix_dict = dict(sorted(mean_matrix_dict.items(), key=lambda item: item[1]))
+        self.mean_matrix_dict = mean_matrix_dict
+        self.auc_df = auc_df
