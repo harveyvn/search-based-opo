@@ -6,7 +6,7 @@ from src.models import SimulationFactory, Simulation, SimulationScore, Simulatio
 from src.models.ac3rp import CrashScenario
 from src.models.constant import CONST
 from experiment import Experiment
-from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer
+from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer, Preprocessing
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -189,7 +189,8 @@ if __name__ == '__main__':
     ]
 
     for s in scenarios:
-        soo = ExperimentVisualizer(s[0], s[1], s[2])
+        ppr = Preprocessing(s[0])
+        soo = ExperimentVisualizer(preprocess=ppr, ylim=s[1], bp_ylim=s[2])
         soo.visualize()
         soo.visualize_box_plot()
 

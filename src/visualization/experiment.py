@@ -1,76 +1,27 @@
 # libraries
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
 import pandas as pd
-import json
-from src.models.ac3rp import CrashScenario
-from src.models import SimulationFactory, Simulation, SimulationScore
 from .mutation import Mutation
+from .preprocessing import Preprocessing
 
 
 class ExperimentVisualizer:
-    def __init__(self, file_path, ylim=None, bp_ylim=None):
+    def __init__(self, preprocess: Preprocessing, ylim=None, bp_ylim=None):
         self.ylim = [5, 5] if ylim is None else ylim
         self.bp_ylim = [5, 5] if bp_ylim is None else bp_ylim
-        self.df_rand_m1, self.df_opo_m1, self.df_rand_m2, self.df_opo_m2, self.df_rand_opo_m1, self.df_rand_opo_m2 = pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
-        with open(file_path) as file:
-            scenario = json.load(file)
-        crash_scenario = CrashScenario.from_json(scenario)
-        sim_factory = SimulationFactory(crash_scenario)
-        simulation = Simulation(sim_factory=sim_factory)
-        self.target = SimulationScore(simulation).get_expected_score()
-        self.case = crash_scenario.name
+        self.preprocess = preprocess
+        self.case = preprocess.case
+        self.target = preprocess.target
 
-    def process_individual(self, path, col_name):
-        df = pd.read_csv(path, usecols=["score"])
-        df = df.rename({"score": col_name}, axis=1)
-        df = df.append([[] for _ in range(31 - len(df.index))], ignore_index=True)
-        latest_score = 0
-        for val in df[col_name]:
-            if not np.isnan(val):
-                latest_score = val
-
-        df[col_name].fillna(latest_score, inplace=True)
-        df[col_name] = df.apply(lambda r: r[col_name] if r[col_name] >= 0 else r[col_name] / 1000, axis=1)
-        return df
-
-    def preprocess_df(self, algorithm, mutator):
-        df = pd.DataFrame()
-        dfs = []
-        for i in np.arange(start=1, stop=11, step=1):
-            df_tmp = self.process_individual(f'output/{self.case}/{mutator}_{algorithm}_{i}.csv', f'repetition_{i}')
-            dfs.append(df_tmp)
-        df = pd.concat(dfs, axis=1)
-        df[algorithm] = df.mean(numeric_only=True, axis=1)
-        df["std"] = df.std(numeric_only=True, axis=1)
-        df["i"] = np.arange(start=0, stop=31, step=1)
-        return df
-
-    def transform_df_boxplot(self, original_df):
+    @staticmethod
+    def transform_df_boxplot(original_df):
         df = original_df.copy()
         dfn = pd.DataFrame([], columns=["Epoch", "Score"])
         for row in range(31):
             for col in range(10):
                 dfn = dfn.append({'Epoch': row, "Score": df.iloc[row, col]}, ignore_index=True)
         return dfn
-
-    def generate_dfs(self):
-        self.df_rand_m1 = self.preprocess_df("Random", "Single")
-        self.df_opo_m1 = self.preprocess_df("OpO", "Single")
-        self.df_rand_m2 = self.preprocess_df("Random", "Multi")
-        self.df_opo_m2 = self.preprocess_df("OpO", "Multi")
-
-        self.df_rand_opo_m1 = pd.DataFrame()
-        self.df_rand_opo_m1["i"] = self.df_rand_m1["i"]
-        self.df_rand_opo_m1["Random"] = self.df_rand_m1["Random"]
-        self.df_rand_opo_m1["OpO"] = self.df_opo_m1["OpO"]
-
-        self.df_rand_opo_m2 = pd.DataFrame()
-        self.df_rand_opo_m2["i"] = self.df_rand_m2["i"]
-        self.df_rand_opo_m2["Random"] = self.df_rand_m2["Random"]
-        self.df_rand_opo_m2["OpO"] = self.df_opo_m2["OpO"]
-        return self.df_rand_m1, self.df_opo_m1, self.df_rand_m2, self.df_opo_m2, self.df_rand_opo_m1, self.df_rand_opo_m2
 
     def visualize(self):
         def _confidence_interval(i, mean, std, ax=None, color=None):
@@ -81,7 +32,7 @@ class ExperimentVisualizer:
             ax.fill_between(x, (y - ci), (y + ci), color=color, alpha=0.3)
             return ax
 
-        df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
+        df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.preprocess.generate_dfs()
         d_mutators = [
             Mutation(xs=df_rand_m1["i"],
                      ys=df_rand_m1["Random"],
@@ -184,7 +135,7 @@ class ExperimentVisualizer:
         fig.savefig(f'output/{self.case}/Plot - Multiple.png', bbox_inches="tight")
 
     def visualize_box_plot(self):
-        df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
+        df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.preprocess.generate_dfs()
 
         df_rand_m1 = self.transform_df_boxplot(df_rand_m1)
         df_opo_m1 = self.transform_df_boxplot(df_opo_m1)
