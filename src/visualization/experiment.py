@@ -32,14 +32,14 @@ class ExperimentVisualizer:
                 latest_score = val
 
         df[col_name].fillna(latest_score, inplace=True)
-        df[col_name] = df.apply(lambda r: r[col_name] if r[col_name] >= 0 else r[col_name]/1000, axis=1)
+        df[col_name] = df.apply(lambda r: r[col_name] if r[col_name] >= 0 else r[col_name] / 1000, axis=1)
         return df
 
     def preprocess_df(self, algorithm, mutator):
         df = pd.DataFrame()
         dfs = []
         for i in np.arange(start=1, stop=11, step=1):
-            df_tmp = self.process_individual(f'outputs/{self.case}/{mutator}_{algorithm}_{i}.csv', f'score_{i}')
+            df_tmp = self.process_individual(f'output/{self.case}/{mutator}_{algorithm}_{i}.csv', f'repetition_{i}')
             dfs.append(df_tmp)
         df = pd.concat(dfs, axis=1)
         df[algorithm] = df.mean(numeric_only=True, axis=1)
@@ -83,17 +83,45 @@ class ExperimentVisualizer:
 
         df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
         d_mutators = [
-            Mutation(xs=df_rand_m1["i"], ys=df_rand_m1["Random"], method="simp", color="steelblue",
-                     name="S.Rand", short_name="Single", family="Random"),
-            Mutation(xs=df_rand_m2["i"], ys=df_rand_m2["Random"], method="simp", color="orange",
-                     name="M.Rand", short_name="Multiple", family="Random"),
-            Mutation(xs=df_opo_m1["i"], ys=df_opo_m1["OpO"], method="simp", color="green", name="S.OpO",
-                     short_name="Single", family="OpO"),
-            Mutation(xs=df_opo_m2["i"], ys=df_opo_m2["OpO"], method="simp", color="red", name="M.OpO",
-                     short_name="Multiple", family="OpO"),
+            Mutation(xs=df_rand_m1["i"],
+                     ys=df_rand_m1["Random"],
+                     method="simp",
+                     color="steelblue",
+                     name="S.Rand",
+                     short_name="Single",
+                     family="Random",
+                     target_score=self.target,
+                     y_pred=df_rand_m1[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
+            Mutation(xs=df_rand_m2["i"],
+                     ys=df_rand_m2["Random"],
+                     method="simp",
+                     color="orange",
+                     name="M.Rand",
+                     short_name="Multiple",
+                     family="Random",
+                     target_score=self.target,
+                     y_pred=df_rand_m2[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
+            Mutation(xs=df_opo_m1["i"],
+                     ys=df_opo_m1["OpO"],
+                     method="simp",
+                     color="green",
+                     name="S.OpO",
+                     short_name="Single",
+                     family="OpO",
+                     target_score=self.target,
+                     y_pred=df_opo_m1[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
+            Mutation(xs=df_opo_m2["i"],
+                     ys=df_opo_m2["OpO"],
+                     method="simp",
+                     color="red",
+                     name="M.OpO",
+                     short_name="Multiple",
+                     family="OpO",
+                     target_score=self.target,
+                     y_pred=df_opo_m2[[f'repetition_{i}' for i in range(1, 11)]].tail(1)),
         ]
 
-        d_mutators = sorted(d_mutators, key=lambda x: x.auc, reverse=True)
+        d_mutators = sorted(d_mutators, key=lambda x: x.mse, reverse=False)
         fig, ax = plt.subplots(3, 3, figsize=(15, 15))
         axs = []
 
@@ -153,7 +181,7 @@ class ExperimentVisualizer:
             ax.set_ylim(self.ylim)
 
         plt.show()
-        fig.savefig(f'outputs/{self.case}/Plot - Multiple.png', bbox_inches="tight")
+        fig.savefig(f'output/{self.case}/Plot - Multiple.png', bbox_inches="tight")
 
     def visualize_box_plot(self):
         df_rand_m1, df_opo_m1, df_rand_m2, df_opo_m2, df_rand_opo_m1, df_rand_opo_m2 = self.generate_dfs()
@@ -192,4 +220,4 @@ class ExperimentVisualizer:
             ax.yaxis.label.set_visible(False)
 
         plt.show()
-        fig.savefig(f'outputs/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")
+        fig.savefig(f'output/{self.case}/Plot - BoxPlot.png', bbox_inches="tight")
