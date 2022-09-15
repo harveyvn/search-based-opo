@@ -196,4 +196,6 @@ if __name__ == '__main__':
         soo.visualize_box_plot()
         report = Report(df=ppr.auc_df)
         report.are_they_different()
+        print("=====")
+        report.which_is_better()
 
