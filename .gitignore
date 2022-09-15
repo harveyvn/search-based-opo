@@ -163,6 +163,7 @@ lanelet/
 ciren/
 samples/
 cases/
-outputs/
+output/
+input/
 simulations/
 debug/
