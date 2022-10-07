@@ -5,11 +5,18 @@ from src.libraries.libs import VD_A
 
 
 class Report:
-    def __init__(self, df: pd.DataFrame):
+    def __init__(self, case_id, df: pd.DataFrame):
         self.df = df
+        self.case_id = case_id
 
     def are_they_different(self):
         data = self.df.to_dict("list")
+        import matplotlib.pyplot as plt
+        boxplot = self.df.boxplot(column=['S.Rand', 'S.OpO', 'M.Rand', 'M.OpO'])
+        boxplot.plot()
+        plt.show()
+        for k, v in data.items():
+            print(k, v)
         p_value = 0.05
         print(f'p-value is {p_value}')
         for list1, list2 in combinations(data.keys(), 2):
@@ -20,13 +27,41 @@ class Report:
     def which_is_better(self):
         data = self.df.to_dict("list")
 
-        matrix_dict = {}
+        mt = {}
         for l1, l2 in combinations(data.keys(), 2):
             result = VD_A(data[l1], data[l2])
-            matrix_dict.update({(l1, l2): result[0]})
-            matrix_dict.update({(l2, l1): 1 - result[0]})
+            point = str(round(result[0], 2))
+            m_point = str(round(1 - result[0], 2))
+            mt.update({(l1, l2): point})
+            mt.update({(l2, l1): m_point})
 
-        matrix_dict.update({("S.Rand", "S.Rand"): 0.5})
-        matrix_dict.update({("S.OpO", "S.OpO"): 0.5})
-        matrix_dict.update({("M.Rand", "M.Rand"): 0.5})
-        matrix_dict.update({("M.OpO", "M.OpO"): 0.5})
+        mt.update({("S.Rand", "S.Rand"): 0.5})
+        mt.update({("S.OpO", "S.OpO"): 0.5})
+        mt.update({("M.Rand", "M.Rand"): 0.5})
+        mt.update({("M.OpO", "M.OpO"): 0.5})
+
+        # for k,v in mt.items():
+        #     print(k, v)
+
+        print(r'\begin{table}[h!]')
+        print(r'  \begin{center}')
+        print(r'    \caption{Case ' + f'{self.case_id}' + ': Quantitative comparison of Single Random (S.Rand), Single OpO (S.OpO), Multiple Random (M.Rand), and Multiple OpO (M.OpO)\\\\}')
+        print(r'    \label{tab:table_a12_'+self.case_id+'}')
+        print(r'    \begin{tabular}{l|c|c|c|c}')
+        print(r'      \textbf{(p-value < 0.05} & \textbf{S.Rand} & \textbf{S.OpO} & \textbf{M.Rand} & \textbf{M.OpO}\\')
+        print(r'      \hline')
+        print(r'      \textbf{S.Rand}' + '  & 0.5  & {}    & {}     & {}   \\\\'.format(mt[('S.OpO', 'S.Rand')],
+                                                                                      mt[('M.Rand', 'S.Rand')],
+                                                                                      mt['M.OpO', 'S.Rand']))
+        print(r'      \textbf{S.OpO} ' + '  & {}    & 0.5  & {}     & {}   \\\\'.format(mt[('S.Rand', 'S.OpO')],
+                                                                                      mt[('M.Rand', 'S.OpO')],
+                                                                                      mt['M.OpO', 'S.OpO']))
+        print(r'      \textbf{M.Rand}' + '  & {}    & {}    & 0.5   & {}   \\\\'.format(mt[('S.Rand', 'M.Rand')],
+                                                                                      mt[('S.OpO', 'M.Rand')],
+                                                                                      mt['M.OpO', 'M.Rand']))
+        print(r'      \textbf{M.OpO} ' + '  & {}    & {}    & {}    & 0.5  \\\\'.format(mt[('S.Rand', 'M.OpO')],
+                                                                                      mt[('S.OpO', 'M.OpO')],
+                                                                                      mt['M.Rand', 'M.OpO']))
+        print(r'    \end{tabular}')
+        print(r'  \end{center}')
+        print(r'\end{table}')

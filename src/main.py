@@ -171,7 +171,7 @@ if __name__ == '__main__':
         #
         # ["input/108812/data.json", [-1.25, 1.95], [-3, 3.25]],
         # ["input/117021/data.json", [1.65, 1.72], [1.55, 1.75]],
-        # ["input/119489/data.json", [-1.25, 1.95], [-3, 3.25]],
+        ["input/119489/data.json", [-1.25, 1.95], [-3, 3.25]],
         # ["input/119839/data.json", [1.6, 1.72], [1.5, 1.78]],
         # ["input/120013/data.json", [1.74, 1.81], [1.6, 1.9]],
         #
@@ -184,7 +184,7 @@ if __name__ == '__main__':
         # ["input/129224/data.json", [1.35, 1.75], [1.25, 1.9]],
         # ["input/137748/data.json", [1.5, 1.75], [1.35, 1.8]],
         # ["input/148154/data.json", [1.55, 1.85], [1.45, 1.95]],
-        ["input/171831/data.json", [-1, 2], [-1.5, 3]],
+        # ["input/171831/data.json", [-1, 2], [-1.5, 3]],
         # ["input/122168/data.json", [1.725, 1.82], [1.5, 1.9]],
     ]
 
@@ -194,8 +194,10 @@ if __name__ == '__main__':
         soo = ExperimentVisualizer(preprocess=ppr, ylim=s[1], bp_ylim=s[2])
         soo.visualize()
         soo.visualize_box_plot()
-        report = Report(df=ppr.auc_df)
+        report = Report(df=ppr.auc_df, case_id=s[0].split('/')[1])
         report.are_they_different()
         print("=====")
         report.which_is_better()
+        print("=====")
+        exit()
 
