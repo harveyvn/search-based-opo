@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from itertools import combinations
 from scipy.stats import ttest_ind
 from src.libraries.libs import VD_A
@@ -10,11 +12,16 @@ class Report:
         self.case_id = case_id
 
     def are_they_different(self):
+        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
         data = self.df.to_dict("list")
-        import matplotlib.pyplot as plt
-        boxplot = self.df.boxplot(column=['S.Rand', 'S.OpO', 'M.Rand', 'M.OpO'])
+        boxplot = self.df.boxplot(column=['S.Rand', 'S.OpO', 'M.Rand', 'M.OpO'], grid=False)
         boxplot.plot()
+        for i, d in enumerate(self.df):
+            y = data[d]
+            x = np.random.normal(i + 1, 0.04, len(y))
+            plt.plot(x, y, 'r.', alpha=0.4)
         plt.show()
+        fig.savefig(f'output/{self.case_id}/Plot - DataPoints.png', bbox_inches="tight")
         for k, v in data.items():
             print(k, v)
         p_value = 0.05
@@ -48,7 +55,7 @@ class Report:
         print(r'    \caption{Case ' + f'{self.case_id}' + ': Quantitative comparison of Single Random (S.Rand), Single OpO (S.OpO), Multiple Random (M.Rand), and Multiple OpO (M.OpO)\\\\}')
         print(r'    \label{tab:table_a12_'+self.case_id+'}')
         print(r'    \begin{tabular}{l|c|c|c|c}')
-        print(r'      \textbf{(p-value < 0.05} & \textbf{S.Rand} & \textbf{S.OpO} & \textbf{M.Rand} & \textbf{M.OpO}\\')
+        print(r'      \textbf{(p-value < 0.05)} & \textbf{S.Rand} & \textbf{S.OpO} & \textbf{M.Rand} & \textbf{M.OpO}\\')
         print(r'      \hline')
         print(r'      \textbf{S.Rand}' + '  & 0.5  & {}    & {}     & {}   \\\\'.format(mt[('S.OpO', 'S.Rand')],
                                                                                       mt[('M.Rand', 'S.Rand')],

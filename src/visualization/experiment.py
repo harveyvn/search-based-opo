@@ -43,6 +43,13 @@ class ExperimentVisualizer:
         ]
         d_mutators = sorted(d_mutators, key=lambda x: x.point, reverse=True)
 
+        # Ranking: S.Rand & S.OpO & M.Rand & M.OpO
+        # d_ranking = [el.name for el in d_mutators]
+        # print(r'\textbf{' + self.case + '} ' + r'   & {} & {} & {} & {} \\'.format(d_ranking.index('S.Rand')+1,
+        #                                                                            d_ranking.index('S.OpO')+1,
+        #                                                                            d_ranking.index('M.Rand')+1,
+        #                                                                            d_ranking.index('M.OpO')+1))
+
         fig, ax = plt.subplots(3, 3, figsize=(15, 15))
         axs = []
 
