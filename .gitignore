@@ -164,6 +164,6 @@ ciren/
 samples/
 cases/
 output/
-#input/
+input/
 simulations/
 debug/
