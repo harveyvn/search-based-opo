@@ -9,6 +9,7 @@ from experiment import Experiment
 from visualization import Scenario as VehicleTrajectoryVisualizer, ExperimentVisualizer, Preprocessing, Report
 
 import warnings
+
 warnings.filterwarnings('ignore')
 
 
@@ -135,6 +136,28 @@ def execute_searching_from(scenario_files):
 
 # make sure we invoke cli
 if __name__ == '__main__':
+    # importing package
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+
+    # create data
+    df = pd.DataFrame([["S.Rand", 1, 1, 2, 2, 2, 2, 4, 2, 4, 3, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2],
+                       ["S.OpO",  3, 3, 3, 1, 3, 1, 3, 3, 2, 4, 3, 3, 2, 3, 4, 3, 4, 3, 2, 4],
+                       ["M.Rand", 2, 4, 1, 4, 4, 3, 1, 4, 3, 1, 2, 2, 3, 1, 1, 2, 2, 2, 4, 1],
+                       ["M.OpO",  4, 2, 4, 3, 1, 4, 2, 1, 1, 2, 4, 4, 4, 4, 3, 4, 3, 4, 3, 3]],
+                      columns=["Algorithm", "99817", "100271", "103378", "105203", "105222", "108812", "117021", "119489",
+                               "119839", "120013", "120305", "121520", "122080", "128066", "128697", "129224",
+                               "137748", "148154", "171831", "122168"])
+    # view data
+    print(df)
+
+    # plot data in stack manner of bar type
+    df.plot(figsize=(12, 12), x="Algorithm", kind="bar", stacked=True, align='center')
+    plt.xticks(rotation=0, ha='center')
+    plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+    plt.show()
+    exit()
     # cli()
     # exit()
     scenarios = [
@@ -200,4 +223,3 @@ if __name__ == '__main__':
         report.which_is_better()
         print("=====")
         exit()
-

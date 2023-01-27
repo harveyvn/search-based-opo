@@ -1,0 +1,39 @@
+{
+    "environment":
+    {
+        "junction_type": "none",
+        "weather": "clear",
+        "lighting": "normal"
+    },
+    "roads":
+    [
+        {
+            "speed_limit": "72",
+            "road_material": "Bituminous (asphalt),Dry",
+            "road_type": "roadway",
+            "is_single_road_piece": "F",
+            "road_direction": "2-way",
+            "road_ID": "1",
+            "road_navigation": "E",
+            "lane_num": "2"
+        }
+    ],
+    "vehicles":
+    [
+        {
+            "road_side": "right",
+            "road_id": 1,
+            "speed": 20,
+            "direction": "E",
+            "lane_num": 100
+        },
+        {
+            "road_side": "right",
+            "road_id": 1,
+            "speed": 20,
+            "direction": "E",
+            "lane_num": 100
+        }
+    ],
+    "case": "171831_mod"
+}

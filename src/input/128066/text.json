@@ -1,0 +1,59 @@
+{
+    "environment":
+    {
+        "junction_type": "intersection",
+        "weather": "rain",
+        "lighting": "dark"
+    },
+    "roads":
+    [
+        {
+            "speed_limit": "64",
+            "road_material": "Bituminous (asphalt),Wet",
+            "road_type": "roadway",
+            "is_single_road_piece": "F",
+            "road_direction": "2-way",
+            "road_ID": "1",
+            "road_navigation": "S",
+            "lane_num": "3"
+        },
+        {
+            "speed_limit": "64",
+            "road_material": "Bituminous (asphalt),Wet",
+            "road_type": "roadway",
+            "is_single_road_piece": "F",
+            "road_direction": "2-way",
+            "road_ID": "2",
+            "road_navigation": "W",
+            "lane_num": "4"
+        },
+        {
+            "speed_limit": "",
+            "road_material": ",",
+            "road_type": "roadway",
+            "is_single_road_piece": "F",
+            "road_direction": "2-way",
+            "road_ID": "3",
+            "road_navigation": "SW",
+            "lane_num": "2"
+        }
+    ],
+    "vehicles":
+    [
+        {
+            "road_side": "right",
+            "road_id": 1,
+            "speed": 20,
+            "direction": "S",
+            "lane_num": 100
+        },
+        {
+            "road_side": "right",
+            "road_id": 1,
+            "speed": 20,
+            "direction": "W",
+            "lane_num": 100
+        }
+    ],
+    "case": "128066_mod"
+}
